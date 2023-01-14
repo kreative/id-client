@@ -19,6 +19,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/Signin.js", "components/ForgotPassword.js", "components/Signup.js"],
   "exclude": ["node_modules"]
 }
