@@ -1,26 +1,124 @@
-export default function Signup() {
+import Link from "next/link";
+import Image from "next/image";
+import * as React from "react";
+import { useState } from "react";
+import { useRouter } from "next/router";
+import axios from "axios";
+
+import AlertComponent from "./Alert";
+import Wallpaper from "./Wallpaper";
+
+function SignupFunction({ appData }) {
+  // api data variables
+  const [username, setUsername] = useState("");
+  const [fname, setFname] = useState("");
+  const [lname, setLname] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [key, setKey] = useState("");
+
+  // page element variables
+  const [title, setTitle] = useState("Create your account");
+  const [subtitle, setSubtitle] = useState(
+    `Then continue back to ${appData.name}`
+  );
+  const [formStyles, setFormStyles] = useState("mt-8");
+  const [goBackStyles, setGoBackStyles] = useState("hidden");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertStyles, setAlertStyles] = useState("hidden");
+
+  const createSignupInstance = (e) => {
+    // prevents page refresh upon button click
+    e.preventDefault();
+
+    // removes any displayed alerts
+    setAlertStyles("hidden");
+
+    // makes post request for the signup api
+    axios
+      .post("https://id-api.kreativeusa.com/v1/accounts/signup", {
+        email,
+        password,
+        username,
+        firstName: fname,
+        lastName: lname,
+        aidn: appData.aidn,
+      })
+      .then((response) => {
+        setFormStyles("hidden");
+        setGoBackStyles("mt-8");
+        setKey(response.data.data.keychain.key);
+        setTitle("Welcome to Kreative");
+        setSubtitle(
+          `You're ready to go back to ${appData.name} and continue your experience`
+        );
+      })
+      .catch((error) => {
+        // sets and finds the statuscode for the response
+        const statusCode = error.response.data.statusCode;
+        // finds and sets the message for the response
+        const message = error.response.data.message;
+
+        if (statusCode === 500 || statusCode === 400) {
+          // 500: internal server error, 400: bad schema
+          if (statusCode === 400 && message === "email must be an email") {
+            setAlertMessage("Please enter a valid email address");
+            setAlertStyles("");
+          } else {
+            setAlertMessage("Internal server error. Try again soon.");
+            setAlertStyles("");
+          }
+        } else if (statusCode === 403) {
+          // unique constraints are failing server-side
+          if (message.includes("username")) {
+            setAlertMessage("Username is taken, try a new one.");
+            setAlertStyles("");
+          } else if (message.includes("email")) {
+            setAlertMessage("There is already an account with this email.");
+            setAlertStyles("");
+          }
+        } else if (statusCode === 404) {
+          // account was not found
+          setAlertMessage("Account not found with given email");
+          setAlertStyles("");
+        } else {
+          // some sort of unknown error on the client side
+          console.log(error);
+          setAlertMessage("Internal application error. Try again soon.");
+          setAlertStyles("");
+        }
+      });
+  };
+
+  const goBack = (e) => {
+    e.preventDefault();
+    window.location.href = `${appData.callbackUrl}?key=${key}`;
+  };
+
   return (
     <>
       <div className="flex min-h-screen">
         <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div>
-              <img
-                className="h-7 w-auto"
+            <Image
+                className="h-8 w-auto"
                 src="/kreative-id.png"
                 alt="Kreative ID logo in color"
+                height={1000}
+                width={100}
               />
               <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-                Create your new account
+                {title}
               </h2>
-              <p className="mt-2 text-sm text-gray-600">
-                and continue to your application
-              </p>
+              <p className="mt-2 text-sm text-gray-600">{subtitle}</p>
             </div>
-
-            <div className="mt-8">
+            <div id="alert" className={alertStyles}>
+              <AlertComponent message={alertMessage} />
+            </div>
+            <div className={formStyles}>
               <div className="mt-6">
-                <form className="mt-8 space-y-6" action="#" method="POST">
+                <form className="mt-8 space-y-6">
                   <div className="mt-1 sm:col-span-2 sm:mt-0">
                     <div className="flex max-w-full rounded-md shadow-sm">
                       <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
@@ -31,8 +129,11 @@ export default function Signup() {
                         name="username"
                         id="username"
                         autoComplete="username"
+                        value={username}
                         placeholder="Username"
                         className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
                       />
                     </div>
                   </div>
@@ -40,30 +141,31 @@ export default function Signup() {
                   <div className="-space-y-px rounded-md shadow-sm">
                     <div className="flex -space-x-px rounded-t-md rounded-b-none">
                       <div className="w-1/2 min-w-0 flex-1">
-                        <label
-                          htmlFor="first-name"
-                          className="sr-only"
-                        >
+                        <label htmlFor="first-name" className="sr-only">
                           First name
                         </label>
                         <input
                           type="text"
                           name="first-name"
                           id="first-name"
+                          value={fname}
                           className="relative block w-full rounded-none rounded-tl-md border-gray-300 bg-transparent focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           placeholder="First name"
+                          onChange={(e) => setFname(e.target.value)}
                         />
                       </div>
                       <div className="min-w-0 flex-1">
                         <label htmlFor="last-name" className="sr-only">
-                          CVC
+                          Last name
                         </label>
                         <input
                           type="text"
                           name="last-name"
                           id="last-name"
+                          value={lname}
                           className="relative block w-full rounded-none rounded-tr-md border-gray-300 bg-transparent focus:z-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           placeholder="Last name"
+                          onChange={(e) => setLname(e.target.value)}
                         />
                       </div>
                     </div>
@@ -76,10 +178,12 @@ export default function Signup() {
                         id="email-address"
                         name="email"
                         type="email"
-                        autoComplete="email"
+                        autoComplete="nope"
+                        value={email}
                         required
                         className="relative block w-full appearance-none rounded-none border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="Email address"
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                     <div>
@@ -90,16 +194,19 @@ export default function Signup() {
                         id="password"
                         name="password"
                         type="password"
-                        autoComplete="current-password"
+                        autoComplete="new-password"
+                        value={password}
                         required
                         className="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="Password"
+                        onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
                   </div>
+
                   <div>
                     <button
-                      type="submit"
+                      onClick={(e) => createSignupInstance(e)}
                       className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
                       Sign up
@@ -109,24 +216,66 @@ export default function Signup() {
               </div>
               <p className="mt-2 pt-2 text-center text-sm text-gray-600">
                 Have an account?{" "}
-                <a
-                  href="/signin"
+                <Link
+                  href={`/signin?aidn=${appData.aidn}`}
                   className="font-medium text-indigo-600 hover:text-indigo-500"
                 >
-                  Sign in here!{" "}
-                </a>
+                  Sign in here{" "}
+                </Link>
               </p>
+            </div>
+            <div id="go-back-button" className={goBackStyles}>
+              <div>
+                <button
+                  onClick={(e) => goBack(e)}
+                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Go back
+                </button>
+              </div>
             </div>
           </div>
         </div>
         <div className="relative hidden w-0 flex-1 lg:block">
-          <img
-            className="absolute inset-0 h-full w-full object-cover"
-            src="https://images.unsplash.com/photo-1505904267569-f02eaeb45a4c?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1908&q=80"
-            alt=""
-          />
+          <Wallpaper />
         </div>
       </div>
     </>
   );
+}
+
+export default function SignupComponent() {
+  const router = useRouter();
+  const { aidn } = router.query;
+  const [appData, setAppData] = useState();
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    // ensures nothing happens unless aidn is defined
+    if (!aidn) return;
+
+    console.log("running");
+    const setAppVariables = async () => {
+      axios
+        .get(`https://id-api.kreativeusa.com/v1/applications/${aidn}`)
+        .then((response) => {
+          setAppData({
+            aidn: response.data.data.application.aidn,
+            name: response.data.data.application.name,
+            callbackUrl: response.data.data.application.callbackUrl,
+          });
+          return () => (mounted = false);
+        })
+        .catch((error) => {
+          // unknown error
+          console.log(error);
+        });
+    };
+
+    // sets variables from applications api
+    setAppVariables();
+  }, [aidn]);
+
+  return <div>{appData && <SignupFunction appData={appData} />}</div>;
 }
