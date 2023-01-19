@@ -1,6 +1,7 @@
 import Head from "next/head";
 
 import Authenticate from "../components/Authenticate";
+import AdminComponent from "../components/Admin";
 
 // we should be getting user data in the NextRequest object
 // this would come from the middleware that is authenticating user information
@@ -19,7 +20,7 @@ export default function AdminPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1>Admin</h1>
+        <AdminComponent />
       </main>
     </Authenticate>
   );
