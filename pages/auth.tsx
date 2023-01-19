@@ -23,13 +23,8 @@ export default function AuthPage() {
       console.log("callback: hello");
       // adds the cookie for the client side
       setCookie("kreative_id_key", key, { secure: true });
-      
-      // verifies that the cookie is actually there (testing)
-      if (cookies["kreative_id_key"] !== undefined) {
-        window.location.href = `/admin`
-      } else {
-        console.log("somethings wrong...")
-      }
+      // redirects to the admin page for authentication flow to continue
+      window.location.href = "/admin";
     };
 
     // takes the given key and creates a new cookie, then redirects user to admin page
