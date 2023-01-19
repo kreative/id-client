@@ -100,7 +100,7 @@ export default function AuthenticateComponent({ children }) {
             } else {
               // some sort of unknown error, possibly on the client side itseld
               console.log(error);
-              //window.location.href = "/error?cause=unknown";
+              window.location.href = "/error?cause=unknown";
             }
           });
       }
