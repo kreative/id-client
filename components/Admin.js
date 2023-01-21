@@ -134,7 +134,7 @@ export default function AdminComponent() {
     };
 
     getApplications();
-  }, [apps]);
+  }, []);
 
   return (
     <div>{apps.length !== 0 && <AdminFunction apps={apps} />}</div>
