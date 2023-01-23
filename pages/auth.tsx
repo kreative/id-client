@@ -9,7 +9,7 @@ import { useCookies } from "react-cookie";
 // there, the admin page will have it's middleware go through the auth verification flow
 export default function AuthPage() {
   const router = useRouter();
-  const { key } = router.query
+  const { key } = router.query;
   const [cookies, setCookie, removeCookie] = useCookies(["kreative_id_key"]);
   
   useEffect(() => {
