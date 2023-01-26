@@ -32,6 +32,11 @@ function SigninFunction({ appData }) {
 
   const handleCheckedChange = (e) => setRememberMe(!rememberMe);
 
+  const changeAlert = (message) => {
+    setAlertMessage(message);
+    setAlertStyles("");
+  }
+
   const createSigninInstance = (e) => {
     // prevents page refresh upon button click
     e.preventDefault();
@@ -65,26 +70,21 @@ function SigninFunction({ appData }) {
         if (statusCode === 500 || statusCode === 400) {
           // 500: internal server error, 400: bad schema
           if (statusCode === 400 && message === "email must be an email") {
-            setAlertMessage("Please enter a valid email address");
-            setAlertStyles("");
+            changeAlert("Please enter a valid email address");
           } else {
-            setAlertMessage("Internal server error. Try again soon.");
-            setAlertStyles("");
+            changeAlert("Internal server error. Try again soon.");
           }
         } else if (statusCode === 404) {
           // no account found with the given email
-          setAlertMessage("No account found with the given email");
-          setAlertStyles("");
+          changeAlert("No account found with the given email");
         } else if (statusCode === 403 || statusCode === 401) {
           // incorrect credentials
           // 401 means unauthorized, we need to FIX this from the server side response
-          setAlertMessage("Password or email incorrect");
-          setAlertStyles("");
+          changeAlert("Password or email incorrect");
         } else {
           // some sort of unknown error on the client side
           console.log(error);
-          setAlertMessage("Internal application error. Try again soon.");
-          setAlertStyles("");
+          changeAlert("Internal application error. Try again soon.");
         }
       });
   };

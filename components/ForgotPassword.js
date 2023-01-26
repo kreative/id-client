@@ -31,6 +31,11 @@ function ForgotPasswordFunction({ appData }) {
   const [alertStyles, setAlertStyles] = useState("hidden");
   const [goBackStyles, setGoBackStyles] = useState("hidden");
 
+  const changeAlert = (message) => {
+    setAlertMessage(message);
+    setAlertStyles("");
+  }
+
   const findAccount = (e) => {
     // prevents page refresh upon button click
     e.preventDefault();
@@ -57,17 +62,14 @@ function ForgotPasswordFunction({ appData }) {
 
         if (statusCode === 500 || statusCode === 400) {
           // 500: internal server error, 400: bad schema
-          setAlertMessage("Internal server error. Try again soon.");
-          setAlertStyles("");
+          changeAlert("Internal server error. Try again soon.");
         } else if (statusCode === 404) {
           // the account was not found
-          setAlertMessage("No account found from this email.");
-          setAlertStyles("");
+          changeAlert("No account found from this email.");
         } else {
           // some sort of unknown error on the client side
           console.log(error);
-          setAlertMessage("Internal application error. Try again soon.");
-          setAlertStyles("");
+          changeAlert("Internal application error. Try again soon.");
         }
       });
   };
@@ -99,21 +101,17 @@ function ForgotPasswordFunction({ appData }) {
         if (statusCode === 500 || statusCode === 400) {
           // 500: internal server error, 400: bad schema
           if (statusCode === 400 && message === "email must be an email") {
-            setAlertMessage("Please enter a valid email address");
-            setAlertStyles("");
+            changeAlert("Please enter a valid email address");
           } else {
-            setAlertMessage("Internal server error. Try again soon.");
-            setAlertStyles("");
+            changeAlert("Internal server error. Try again soon.");
           }
         } else if (statusCode === 403) {
           // reset code that was given is incorrect
-          setAlertMessage("Reset code given is incorrect, try again.");
-          setAlertStyles("");
+          changeAlert("Reset code given is incorrect, try again.");
         } else {
           // some sort of unknown error on the client side
           console.log(error);
-          setAlertMessage("Internal application error. Try again soon.");
-          setAlertStyles("");
+          changeAlert("Internal application error. Try again soon.");
         }
       });
   };
@@ -126,8 +124,7 @@ function ForgotPasswordFunction({ appData }) {
 
     // verifys that the password and confirmed password are correct
     if (!(password === cPassword)) {
-      setAlertMessage("Passwords do not match.");
-      setAlertStyles("");
+      changeAlert("Passwords do not match.");
     } else {
       // creates a new post request to reset an account password
       axios
@@ -149,13 +146,11 @@ function ForgotPasswordFunction({ appData }) {
 
           if (statusCode === 500 || statusCode === 400) {
             // 500: internal server error, 400: bad schema
-            setAlertMessage("Internal server error. Try again soon.");
-            setAlertStyles("");
+            changeAlert("Internal server error. Try again soon.");
           } else {
             // some sort of unknown error on the client side
             console.log(error);
-            setAlertMessage("Internal application error. Try again soon.");
-            setAlertStyles("");
+            changeAlert("Internal application error. Try again soon.");
           }
         });
     }

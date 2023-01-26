@@ -27,6 +27,11 @@ function SignupFunction({ appData }) {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertStyles, setAlertStyles] = useState("hidden");
 
+  const changeAlert = (message) => {
+    setAlertMessage(message);
+    setAlertStyles("");
+  }
+
   const createSignupInstance = (e) => {
     // prevents page refresh upon button click
     e.preventDefault();
@@ -62,30 +67,24 @@ function SignupFunction({ appData }) {
         if (statusCode === 500 || statusCode === 400) {
           // 500: internal server error, 400: bad schema
           if (statusCode === 400 && message === "email must be an email") {
-            setAlertMessage("Please enter a valid email address");
-            setAlertStyles("");
+            changeAlert("Please enter a valid email address");
           } else {
-            setAlertMessage("Internal server error. Try again soon.");
-            setAlertStyles("");
+            changeAlert("Internal server error. Try again soon.");
           }
         } else if (statusCode === 403) {
           // unique constraints are failing server-side
           if (message.includes("username")) {
-            setAlertMessage("Username is taken, try a new one.");
-            setAlertStyles("");
+            changeAlert("Username is taken, try a new one.");
           } else if (message.includes("email")) {
-            setAlertMessage("There is already an account with this email.");
-            setAlertStyles("");
+            changeAlert("There is already an account with this email.");
           }
         } else if (statusCode === 404) {
           // account was not found
-          setAlertMessage("Account not found with given email");
-          setAlertStyles("");
+          changeAlert("Account not found with given email");
         } else {
           // some sort of unknown error on the client side
           console.log(error);
-          setAlertMessage("Internal application error. Try again soon.");
-          setAlertStyles("");
+          changeAlert("Internal application error. Try again soon.");
         }
       });
   };
