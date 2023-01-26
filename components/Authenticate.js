@@ -5,15 +5,11 @@ import { useCookies } from "react-cookie";
 // the identifier for kreative id, either test or prod version
 const AIDN = process.env.NEXT_PUBLIC_AIDN;
 
-// any of the permissions that would allow the user to continue using the application
-// we could also verify permissions in the actual admin page itself
-const permissions = ["KREATIVE_ID_ADMIN", "KREATIVE_ID_DEVELOPER"];
-
 // this component will serve as custom "middleware" to authenticate certain pages
 // essentially, it will take all page components as children
 // the function will run the authentication, and once it has passed will display children
 // if the authentication fails, it will either handle it or redirect the user
-export default function AuthenticateComponent({ children }) {
+export default function AuthenticateComponent({ children, permissions }) {
   // this sets default state to not authenticate so that the function won't render until useEffect has run
   const [authenticated, setAuthenticated] = useState(false);
   // the single cookie we need for this function, stores the key for the user
