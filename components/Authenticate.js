@@ -78,6 +78,7 @@ export default function AuthenticateComponent({ children, permissions }) {
             // verification of the key has failed for some reason
             // possible reasons include: expired keychain, aidn mismatch, internal server error, not found (rare)
             console.log("we ran into an error...");
+            console.log(error);
 
             if (error.response.data.statusCode === 500) {
               // internal server error
