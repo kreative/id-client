@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import axios from "axios";
+import { useCookies } from "react-cookie";
 
 function AdminFunction({ apps }) {
   return (
@@ -109,16 +110,25 @@ function AdminFunction({ apps }) {
 
 export default function AdminComponent() {
   const [apps, setApps] = useState([]);
+  const [cookies, setCookie, removeCookie] = useCookies(["kreative_id_key"]);
 
   React.useEffect(() => {
     let mounted = true;
 
-    console.log("hello")
+    // ensures nothing can happen unless the cookie loads
+    if (!cookies["kreative_id_key"]) return;
 
     const getApplications = () => {
-      console.log("get")
+      // with this axios request, we need to set the proper headers for the server-side authentication
+      // this includes: kreative_id_key, kreative_aidn
+      console.log(cookies["kreative_id_key"]);
       axios
-        .get("https://id-api.kreativeusa.com/v1/applications")
+        .get("https://id-api.kreativeusa.com/v1/applications", {
+          headers: {
+            "KREATIVE_ID_KEY": cookies["kreative_id_key"],
+            "KREATIVE_AIDN": process.env.NEXT_PUBLIC_AIDN,
+          }
+        })
         .then((response) => {
           // status code is between 200-299, we should have the apps
           const applications = response.data.data;
@@ -134,7 +144,7 @@ export default function AdminComponent() {
     };
 
     getApplications();
-  }, []);
+  }, [cookies["kreative_id_key"]]);
 
   return (
     <div>{apps.length !== 0 && <AdminFunction apps={apps} />}</div>
