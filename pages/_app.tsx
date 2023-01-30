@@ -4,7 +4,9 @@ import { CookiesProvider } from "react-cookie";
 import { Inter } from '@next/font/google';
 import localFont from "@next/font/local";
 
+// we still need the inter font for initial UI hydration
 const inter = Inter({ subsets: ['latin'] });
+// custom craftwork sans fonts loading locally
 const craftworkSans = localFont({
   src: [
     {
