@@ -4,7 +4,7 @@ export default function AdminPage() {
   return (
     <>
       <Head>
-        <title>Auth Error | Kreative ID</title>
+        <title>Error | Kreative ID</title>
         <meta
           name="description"
           content="First-class authentication for Kreative."
@@ -13,8 +13,15 @@ export default function AdminPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1>Ooops...</h1>
+        <h1 className="pt-12 pb-3 text-center text-2xl">
+          You have been logged out.
+        </h1>
+        <div className="text-center">
+          <Link href="/admin" className="text-md text-center text-indigo-500">
+            Sign back into the dashboard
+          </Link>
+        </div>
       </main>
     </>
-  )
+  );
 }
