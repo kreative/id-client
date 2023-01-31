@@ -61,7 +61,7 @@ export default function AuthenticateComponent({ children, permissions }) {
                 // we can't just say the user isn't authenticated, because they are, they just don't have the correct permissions
                 // FOR NOW we will handle the error by redirecting the user to the error page with a query param for the error
                 console.log("invalid permissions");
-                //window.location.href = "/error?cause=permissions";
+                window.location.href = "/error?cause=permissions";
               } else {
                 // since we can't add headers, since we are executing this on the client side, we will just setup new cookies
                 setCookie('keychain_id', keychain.id);
