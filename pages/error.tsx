@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 
 export default function AdminPage() {
   return (
@@ -14,11 +15,17 @@ export default function AdminPage() {
       </Head>
       <main>
         <h1 className="pt-12 pb-3 text-center text-2xl">
-          You have been logged out.
+          There has been an error while trying to authenticate you...
         </h1>
+        <p className="text-lg text-gray-400 text-center pb-6">Check the URL parameters for error type</p>
+        <div className="text-center pb-3">
+          <Link href="/admin" className="text-lg text-center text-indigo-500">
+            Try signing in again
+          </Link>
+        </div>
         <div className="text-center">
-          <Link href="/admin" className="text-md text-center text-indigo-500">
-            Sign back into the dashboard
+          <Link href="https://support.kreativeusa.com/id" className="text-md text-center text-indigo-400">
+            Contact Kreative Support
           </Link>
         </div>
       </main>
