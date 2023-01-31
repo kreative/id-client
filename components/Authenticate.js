@@ -15,6 +15,7 @@ export default function AuthenticateComponent({ children, permissions }) {
   // the single cookie we need for this function, stores the key for the user
   const [cookies, setCookie, removeCookie] = useCookies([
     "kreative_id_key",
+    "keychain_id",
     "id_ksn",
     "id_email",
     "id_fname",
@@ -45,6 +46,7 @@ export default function AuthenticateComponent({ children, permissions }) {
             // successful response from the server, should be code 200 (maybe 201)
             if (response.data.statusCode === 200) {
               const account = response.data.data.account;
+              const keychain = response.data.data.keychain;
               const userPermissions = account.permissions;
 
               // checks if the user has the same permissions as required by the application
@@ -62,6 +64,7 @@ export default function AuthenticateComponent({ children, permissions }) {
                 //window.location.href = "/error?cause=permissions";
               } else {
                 // since we can't add headers, since we are executing this on the client side, we will just setup new cookies
+                setCookie('keychain_id', keychain.id);
                 setCookie('id_ksn', account.ksn);
                 setCookie('id_email', account.email);
                 setCookie('id_fname', account.firstName);
