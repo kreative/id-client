@@ -20,6 +20,7 @@ function SignupFunction({ appData }) {
   const [key, setKey] = useState("");
 
   // password strength analyzer progress bar states
+  const [passwordScore, setPasswordScore] = useState(0);
   const [barWrapperClass, setBarWrapperClass] = useState("pt-3 hidden");
   const [barMessage, setBarMessage] = useState("");
   const [progressClass, setProgressClass] = useState("");
@@ -36,6 +37,10 @@ function SignupFunction({ appData }) {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertStyles, setAlertStyles] = useState("hidden");
 
+  // regex expression for checking if a string is a valid email address
+  const regexExp =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
+
   const changeAlert = (message) => {
     setAlertMessage(message);
     setAlertStyles("");
@@ -50,34 +55,33 @@ function SignupFunction({ appData }) {
   };
 
   const handlePasswordInput = (passwordInput) => {
-    if (passwordInput.length != 0) {
-      setBarWrapperClass("pt-3");
-    } else {
-      setBarWrapperClass("pt-3 hidden");
-    }
+    // hides the progress bar if there is no password entered
+    if (passwordInput.length != 0) setBarWrapperClass("pt-3");
+    else setBarWrapperClass("pt-3 hidden");
 
     // updates the password in react state
     setPassword(passwordInput);
 
-    // get the score of the password;
+    // get the score of the password and sets it to state
     const score = zxcvbn(password).score;
+    setPasswordScore(score);
 
     // changes progress bar strength based on score
-    if (score === 0 || score === 1) {
+    if (passwordScore === 0 || passwordScore === 1) {
       changeProgressBar(
         "Password weak",
         "h-2.5 w-4/12 rounded-full bg-red-600",
         "20%",
         "text-sm text-red-600"
       );
-    } else if (score === 2) {
+    } else if (passwordScore === 2) {
       changeProgressBar(
         "Password almost there",
         "h-2.5 w-8/12 rounded-full bg-yellow-500",
         "75%",
         "text-sm text-yellow-500"
       );
-    } else if (score === 3 || score === 4) {
+    } else if (passwordScore === 3 || passwordScore === 4) {
       changeProgressBar(
         "Strong password",
         "h-2.5 w-12/12 rounded-full bg-green-700",
@@ -93,6 +97,32 @@ function SignupFunction({ appData }) {
 
     // removes any displayed alerts
     setAlertStyles("hidden");
+
+    // verify that all the fields we want are not empty strings
+    // if anyone of them are empty, error is shown
+    if (
+      email === "" ||
+      password === "" ||
+      fname === "" ||
+      lname === "" ||
+      username === ""
+    ) {
+      changeAlert("Please make sure all fields are filled out");
+      return;
+    }
+
+    // make sure that the email entered is actually an email
+    // shows error if the string test doesn't pass
+    if (!regexExp.test(email)) {
+      changeAlert("Please enter a valid email address");
+      return;
+    }
+
+    // makes sure that the password entered is strong enough
+    if (passwordScore < 3) {
+      changeAlert("Please make your password stronger");
+      return;
+    }
 
     // makes post request for the signup api
     axios
@@ -121,6 +151,7 @@ function SignupFunction({ appData }) {
 
         if (statusCode === 500 || statusCode === 400) {
           // 500: internal server error, 400: bad schema
+          // the email part of this error is basically server-side form validation
           if (statusCode === 400 && message === "email must be an email") {
             changeAlert("Please enter a valid email address");
           } else {
