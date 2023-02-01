@@ -1,7 +1,7 @@
 import Head from "next/head";
 
-import Authenticate from "../components/Authenticate";
-import AdminComponent from "../components/Admin";
+import Authenticate from "../../components/Authenticate";
+import AdminComponent from "../../components/Admin";
 
 // any of the permissions that would allow the user to continue using the application
 const adminPermissions = ["KREATIVE_ID_ADMIN", "KREATIVE_ID_DEVELOPER"];
