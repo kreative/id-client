@@ -210,13 +210,17 @@ export default function AdminComponent() {
         })
         .catch((error) => {
           // some sort of error, statusCode is not between 200-199
-          // TODO: replace this with an alert that shows internal server error
           console.log(error);
+          window.location.href = "/admin/error";
         });
     };
 
     getApplications();
   }, [cookies["kreative_id_key"]]);
 
-  return <div>{apps.length !== 0 && <AdminFunction apps={apps} />}</div>;
+  return (
+    <div>
+      {apps.length !== 0 && <AdminFunction apps={apps} />}
+    </div>
+  );
 }
