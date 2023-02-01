@@ -4,9 +4,11 @@ import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
+import zxcvbn from "zxcvbn";
 
 import AlertComponent from "./Alert";
 import Wallpaper from "./Wallpaper";
+import ProgressBarComponent from "./ProgressBar";
 
 function ForgotPasswordFunction({ appData }) {
   // api data variables
@@ -15,6 +17,14 @@ function ForgotPasswordFunction({ appData }) {
   const [password, setPassword] = useState("");
   const [cPassword, setCPassword] = useState("");
   const [ksn, setKsn] = useState("");
+
+  // password strength analyzer progress bar states
+  const [passwordScore, setPasswordScore] = useState(0);
+  const [barWrapperClass, setBarWrapperClass] = useState("pb-3 hidden");
+  const [barMessage, setBarMessage] = useState("");
+  const [progressClass, setProgressClass] = useState("");
+  const [barWidthName, setBarWidthName] = useState("");
+  const [textClass, setTextClass] = useState("gray-500");
 
   // page element variables
   const [title, setTitle] = useState("Reset your password");
@@ -31,16 +41,77 @@ function ForgotPasswordFunction({ appData }) {
   const [alertStyles, setAlertStyles] = useState("hidden");
   const [goBackStyles, setGoBackStyles] = useState("hidden");
 
+  // regex expression for checking if a string is a valid email address
+  const regexExp =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
+
   const changeAlert = (message) => {
     setAlertMessage(message);
     setAlertStyles("");
-  }
+  };
+
+  const changeProgressBar = (message, progressClass, widthName, textClass) => {
+    // sets the state for the different variables for the progress bar
+    setBarMessage(message);
+    setProgressClass(progressClass);
+    setBarWidthName(widthName);
+    setTextClass(textClass);
+  };
+
+  const handlePasswordInput = (passwordInput) => {
+    // hides the progress bar if there is no password entered
+    if (passwordInput.length != 0) setBarWrapperClass("pb-3");
+    else setBarWrapperClass("pb-3 hidden");
+
+    // updates the password in react state
+    setPassword(passwordInput);
+
+    // get the score of the password and sets it to state
+    const score = zxcvbn(password).score;
+    setPasswordScore(score);
+
+    // changes progress bar strength based on score
+    if (passwordScore === 0 || passwordScore === 1) {
+      changeProgressBar(
+        "Password weak",
+        "h-2.5 w-4/12 rounded-full bg-red-600",
+        "20%",
+        "text-sm text-red-600"
+      );
+    } else if (passwordScore === 2) {
+      changeProgressBar(
+        "Password almost there",
+        "h-2.5 w-8/12 rounded-full bg-yellow-500",
+        "75%",
+        "text-sm text-yellow-500"
+      );
+    } else if (passwordScore === 3 || passwordScore === 4) {
+      changeProgressBar(
+        "Strong password",
+        "h-2.5 w-12/12 rounded-full bg-green-700",
+        "100%",
+        "text-sm text-green-700"
+      );
+    }
+  };
 
   const findAccount = (e) => {
     // prevents page refresh upon button click
     e.preventDefault();
     // removes any displayed alerts
     setAlertStyles("hidden");
+
+    // makes sure that the email field is filled out
+    if (email === "") {
+      changeAlert("Please make sure to enter an email");
+      return;
+    }
+
+    // makes sure that the email entered is a valid email
+    if (!regexExp.test(email)) {
+      changeAlert("Please make sure to enter a valid email");
+      return;
+    }
 
     // makes post request to create a reset code
     axios
@@ -79,6 +150,12 @@ function ForgotPasswordFunction({ appData }) {
     e.preventDefault();
     // removes any displayed alerts
     setAlertStyles("hidden");
+
+    // makes sure the reset code field is not empty
+    if (resetCode === "") {
+      changeAlert("Please enter a reset code");
+      return;
+    }
 
     // makes post request to create a reset code
     axios
@@ -121,6 +198,12 @@ function ForgotPasswordFunction({ appData }) {
     e.preventDefault();
     // removes any displayed alerts
     setAlertStyles("hidden");
+
+    // makes sure that the password is strong enough
+    if (passwordScore < 3) {
+      changeAlert("Please make your password stronger");
+      return;
+    }
 
     // verifys that the password and confirmed password are correct
     if (!(password === cPassword)) {
@@ -167,7 +250,7 @@ function ForgotPasswordFunction({ appData }) {
         <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div>
-            <Image
+              <Image
                 className="h-8 w-auto"
                 src="/kreative-id.png"
                 alt="Kreative ID logo in color"
@@ -249,11 +332,11 @@ function ForgotPasswordFunction({ appData }) {
                         value={password}
                         name="password"
                         type="password"
-                        autoComplete="nope"
+                        autoComplete="new-password"
                         required
                         className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="New password"
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => handlePasswordInput(e.target.value)}
                       />
                     </div>
                     <div>
@@ -267,9 +350,17 @@ function ForgotPasswordFunction({ appData }) {
                         type="password"
                         autoComplete="confirm-password"
                         required
-                        className="relative mb-6 block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="relative mb-3 block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="Confirm password"
                         onChange={(e) => setCPassword(e.target.value)}
+                      />
+                    </div>
+                    <div className={barWrapperClass}>
+                      <ProgressBarComponent
+                        widthName={barWidthName}
+                        progressClass={progressClass}
+                        textClass={textClass}
+                        message={barMessage}
                       />
                     </div>
                     <div>
