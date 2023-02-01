@@ -35,7 +35,7 @@ export default function AuthPage() {
   return (
     <>
       <Head>
-        <title>Authenticate | Kreative ID</title>
+        <title>Authenticating | Kreative ID</title>
         <meta
           name="description"
           content="First-class authentication for Kreative."
@@ -44,7 +44,7 @@ export default function AuthPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1>Authentication Page</h1>
+        <h1 className="pt-6 text-center text-gray-400">We are signing you in... you should be redirected soon.</h1>
       </main>
     </>
   )
