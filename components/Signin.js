@@ -24,6 +24,10 @@ function SigninFunction({ appData }) {
   const [goBackStyles, setGoBackStyles] = useState("hidden");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertStyles, setAlertStyles] = useState("hidden");
+  
+  // regex expression for checking if a string is a valid email address
+  const regexExp =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
 
   React.useEffect(() => {
     // used to allow for checkbox changes
@@ -35,7 +39,7 @@ function SigninFunction({ appData }) {
   const changeAlert = (message) => {
     setAlertMessage(message);
     setAlertStyles("");
-  }
+  };
 
   const createSigninInstance = (e) => {
     // prevents page refresh upon button click
@@ -43,6 +47,20 @@ function SigninFunction({ appData }) {
 
     // removes any displayed alerts
     setAlertStyles("hidden");
+
+    // verify that all the fields we want are not empty strings
+    // if anyone of them are empty, error is shown
+    if (email === "" || password === "") {
+      changeAlert("Please make sure all fields are filled out");
+      return;
+    }
+
+    // make sure that the email entered is actually an email
+    // shows error if the string test doesn't pass
+    if (!regexExp.test(email)) {
+      changeAlert("Please enter a valid email address");
+      return;
+    }
 
     // makes post request for the signin api
     axios
