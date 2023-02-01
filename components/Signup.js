@@ -4,9 +4,11 @@ import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import axios from "axios";
+import zxcvbn from "zxcvbn";
 
 import AlertComponent from "./Alert";
 import Wallpaper from "./Wallpaper";
+import ProgressBarComponent from "./ProgressBar";
 
 function SignupFunction({ appData }) {
   // api data variables
@@ -16,6 +18,13 @@ function SignupFunction({ appData }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [key, setKey] = useState("");
+
+  // password strength analyzer progress bar states
+  const [barWrapperClass, setBarWrapperClass] = useState("pt-3 hidden");
+  const [barMessage, setBarMessage] = useState("");
+  const [progressClass, setProgressClass] = useState("");
+  const [barWidthName, setBarWidthName] = useState("");
+  const [textClass, setTextClass] = useState("gray-500");
 
   // page element variables
   const [title, setTitle] = useState("Create your account");
@@ -30,7 +39,53 @@ function SignupFunction({ appData }) {
   const changeAlert = (message) => {
     setAlertMessage(message);
     setAlertStyles("");
-  }
+  };
+
+  const changeProgressBar = (message, progressClass, widthName, textClass) => {
+    // sets the state for the different variables for the progress bar
+    setBarMessage(message);
+    setProgressClass(progressClass);
+    setBarWidthName(widthName);
+    setTextClass(textClass);
+  };
+
+  const handlePasswordInput = (passwordInput) => {
+    if (passwordInput.length != 0) {
+      setBarWrapperClass("pt-3");
+    } else {
+      setBarWrapperClass("pt-3 hidden");
+    }
+
+    // updates the password in react state
+    setPassword(passwordInput);
+
+    // get the score of the password;
+    const score = zxcvbn(password).score;
+
+    // changes progress bar strength based on score
+    if (score === 0 || score === 1) {
+      changeProgressBar(
+        "Password weak",
+        "h-2.5 w-4/12 rounded-full bg-red-600",
+        "20%",
+        "text-sm text-red-600"
+      );
+    } else if (score === 2) {
+      changeProgressBar(
+        "Password almost there",
+        "h-2.5 w-8/12 rounded-full bg-yellow-500",
+        "75%",
+        "text-sm text-yellow-500"
+      );
+    } else if (score === 3 || score === 4) {
+      changeProgressBar(
+        "Strong password",
+        "h-2.5 w-12/12 rounded-full bg-green-700",
+        "100%",
+        "text-sm text-green-700"
+      );
+    }
+  };
 
   const createSignupInstance = (e) => {
     // prevents page refresh upon button click
@@ -100,7 +155,7 @@ function SignupFunction({ appData }) {
         <div className="flex flex-1 flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <div>
-            <Image
+              <Image
                 className="h-8 w-auto"
                 src="/kreative-id.png"
                 alt="Kreative ID logo in color"
@@ -198,7 +253,15 @@ function SignupFunction({ appData }) {
                         required
                         className="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="Password"
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => handlePasswordInput(e.target.value)}
+                      />
+                    </div>
+                    <div className={barWrapperClass}>
+                      <ProgressBarComponent
+                        widthName={barWidthName}
+                        progressClass={progressClass}
+                        textClass={textClass}
+                        message={barMessage}
                       />
                     </div>
                   </div>
