@@ -1,8 +1,23 @@
-import { Fragment, useRef } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
 export default function CreateApplicationModal({ state, setState }) {
   const cancelButtonRef = useRef(null);
+  const [appName, setAppName] = useState("");
+  const [callback, setCallback] = useState("");
+
+  const createNewApplication = (e) => {
+    // prevents default behavior on button click
+    e.preventDefault();
+
+    // make sure both fields are filled out
+    // add 'https://' to the callback string that was entered
+    // create a post request with axios attaching the right headers
+    // handle any errors produced from the request
+    // if passed, create an alert that shows the new app name and aidn
+    // somehow have the list of applications in the table be refreshed
+    // do not close the modal once everything with the form is completed
+  };
 
   return (
     <Transition.Root show={state} as={Fragment}>
@@ -37,20 +52,65 @@ export default function CreateApplicationModal({ state, setState }) {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
-                  <div className="mt-3 text-center">
+                  <div className="mt-6 pb-3 text-center">
                     <Dialog.Title
                       as="h3"
-                      className="text-lg font-bold leading-6 text-gray-900"
+                      className="text-2xl font-bold leading-6 text-gray-900"
                     >
-                      Payment successful
+                      Create new application
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Lorem ipsum, dolor sit amet consectetur adipisicing
-                        elit. Eius aliquam laudantium explicabo pariatur iste
-                        dolorem animi vitae error totam. At sapiente aliquam
-                        accusamus facere veritatis.
+                        Submit a name for the application and a valid callback
+                        URL for Kreative ID to redirect to. After that, you'll
+                        recieve your new application's AIDN that you can start
+                        using in your application.
                       </p>
+                    </div>
+                    <div id="new-application-form">
+                      <div className="pb-3 pt-6">
+                        <label
+                          htmlFor="email"
+                          className="block text-left text-sm font-medium text-gray-700"
+                        >
+                          Application Name
+                        </label>
+                        <div className="mt-1">
+                          <input
+                            type="text"
+                            name="appName"
+                            id="appName"
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            placeholder="Kreative DreamFactory"
+                            required
+                            value={appName}
+                            onChange={(e) => setAppName(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      <div className="pt-3">
+                        <label
+                          htmlFor="company-website"
+                          className="block text-left text-sm font-medium text-gray-700"
+                        >
+                          Callback URL
+                        </label>
+                        <div className="mt-1 flex rounded-md shadow-sm">
+                          <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
+                            https://
+                          </span>
+                          <input
+                            type="text"
+                            name="callback-url"
+                            id="callback-url"
+                            className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            placeholder="kreativeusa.com"
+                            required
+                            value={callback}
+                            onChange={(e) => setCallback(e.target.value)}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -58,9 +118,9 @@ export default function CreateApplicationModal({ state, setState }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-                    onClick={() => setState(false)}
+                    onClick={(e) => createNewApplication(e)}
                   >
-                    Deactivate
+                    Create application
                   </button>
                   <button
                     type="button"
@@ -68,7 +128,7 @@ export default function CreateApplicationModal({ state, setState }) {
                     onClick={() => setState(false)}
                     ref={cancelButtonRef}
                   >
-                    Cancel
+                    Close
                   </button>
                 </div>
               </Dialog.Panel>
