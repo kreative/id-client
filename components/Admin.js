@@ -1,9 +1,12 @@
-import * as React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 
+import CreateApplicationModal from "@/components/modals/CreateApplication";
+
 function AdminFunction({ apps }) {
+  // state for create application modal
+  const [modalState, setModalState] = useState(false);
   const [cookies, setCookie, removeCookie] = useCookies([
     "kreative_id_key",
     "keychain_id",
@@ -19,7 +22,7 @@ function AdminFunction({ apps }) {
     e.preventDefault();
 
     // closes the keychain using id-api
-    axios
+    axios3
       .post(
         `https://id-api.kreativeusa.com/v1/keychains/${cookies["keychain_id"]}/close`
       )
@@ -93,6 +96,7 @@ function AdminFunction({ apps }) {
           </button>
         </div>
       </div>
+      <CreateApplicationModal state={modalState} setState={setModalState} />
       <div className="pt-12">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
@@ -106,8 +110,8 @@ function AdminFunction({ apps }) {
           </div>
           <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
             <button
-              type="button"
               className="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+              onClick={(e) => setModalState(true)}
             >
               Add application
             </button>
