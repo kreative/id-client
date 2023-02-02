@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: CraftworkSans;
+    font-weight: normal;
+    src: 
+      url('/fonts/CraftworkSans-Regular.woff'),
+      url('/fonts/CraftworkSans-Regular.woff2'),
+      url('/fonts/CraftworkSans-Regular.ttf');
+  }
+
+  @font-face {
+    font-family: CraftworkSans;
+    font-weight: bold;
+    src: 
+      url('/fonts/CraftworkSans-Bold.woff'),
+      url('/fonts/CraftworkSans-Bold.woff2'),
+      url('/fonts/CraftworkSans-Bold.ttf');
+  }
+
+  html {
+    font-family: CraftworkSans, system-ui, sans-serif;
+  }
+}

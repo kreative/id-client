@@ -7,32 +7,32 @@ import localFont from "@next/font/local";
 const craftworkSans = localFont({
   src: [
     {
-      path: '../styles/fonts/CraftworkSans-Regular.woff',
+      path: '../public/fonts/CraftworkSans-Regular.woff',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../styles/fonts/CraftworkSans-Regular.woff2',
+      path: '../public/fonts/CraftworkSans-Regular.woff2',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../styles/fonts/CraftworkSans-Regular.ttf',
+      path: '../public/fonts/CraftworkSans-Regular.ttf',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../styles/fonts/CraftworkSans-Bold.woff',
+      path: '../public/fonts/CraftworkSans-Bold.woff',
       weight: '700',
       style: 'normal',
     },
     {
-      path: '../styles/fonts/CraftworkSans-Bold.woff2',
+      path: '../public/fonts/CraftworkSans-Bold.woff2',
       weight: '700',
       style: 'normal',
     },
     {
-      path: '../styles/fonts/CraftworkSans-Bold.ttf',
+      path: '../public/fonts/CraftworkSans-Bold.ttf',
       weight: '700',
       style: 'normal',
     },
