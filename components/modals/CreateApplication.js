@@ -9,11 +9,17 @@ import AlertComponent from "../Alert";
 export default function CreateApplicationModal({ state, setState }) {
   const cancelButtonRef = useRef(null);
   const queryClient = useQueryClient();
+
   const [cookies] = useCookies(["kreative_id_key"]);
   const [appName, setAppName] = useState("");
   const [callback, setCallback] = useState("");
   const [alertStyles, setAlertStyles] = useState("hidden");
   const [message, setMessage] = useState("");
+
+  const setOpen = (isOpen) => {
+    setState(isOpen);
+    setAlertStyles("hidden");
+  }
 
   const appsMutation = useMutation({
     mutationFn: async () => {
@@ -90,7 +96,7 @@ export default function CreateApplicationModal({ state, setState }) {
         as="div"
         className="relative z-10"
         initialFocus={cancelButtonRef}
-        onClose={setState}
+        onClose={setOpen}
       >
         <Transition.Child
           as={Fragment}
@@ -193,7 +199,7 @@ export default function CreateApplicationModal({ state, setState }) {
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-                    onClick={() => setState(false)}
+                    onClick={() => setOpen(false)}
                     ref={cancelButtonRef}
                   >
                     Close
