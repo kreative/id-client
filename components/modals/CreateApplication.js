@@ -17,6 +17,8 @@ export default function CreateApplicationModal({ state, setState }) {
 
   const appsMutation = useMutation({
     mutationFn: async () => {
+      let response;
+
       try {
         response = await axios.post(
           "https://id-api.kreativeusa.com/v1/applications",
@@ -31,23 +33,31 @@ export default function CreateApplicationModal({ state, setState }) {
             },
           }
         );
-
-        
-        return response.data;
       } catch (error) {
         // some sort of error happened
         console.log(error);
       }
 
+      return response.data;
     },
     onError: (error) => {
       // some sort of error occured
+      // handle any errors produced from the request
       console.log(error);
+      setMessage(`Internal server error occured. Please try again later. ERROR: ${error.message}`)
+      setAlertStyles("");
     },
     onSuccess: () => {
+      console.log("onSuccess started...");
+      // close the modal since the method completely succeeded
+      setState(false);
+
+      // clear out the values from the state
+      setCallback("");
+      setAppName("");
+
       // we tell queryClient that the cached data we currently have is invalid
       // this will force a refetch that contains the newly created application
-      console.log("onSuccess started...");
       queryClient.invalidateQueries({ queryKey: ["apps"] });
     },
   });
@@ -55,6 +65,10 @@ export default function CreateApplicationModal({ state, setState }) {
   const createApplication = (e) => {
     // prevents default behavior on button click
     e.preventDefault();
+
+    // resets the alert component messag eand styles
+    setAlertStyles("hidden");
+    setMessage("");
 
     // make sure both fields are filled out, if not show alert and break thread
     if (appName === "" || callback === "") {
@@ -64,11 +78,10 @@ export default function CreateApplicationModal({ state, setState }) {
     }
 
     // add 'https://' to the callback string that was entered
-    // create a post request with axios attaching the right headers
-    // handle any errors produced from the request
-    // if passed, create an alert that shows the new app name and aidn
-    // somehow have the list of applications in the table be refreshed
-    // do not close the modal once everything with the form is completed
+    setCallback(`https://${callback}`);
+
+    // calls the mutation to create a new application
+    appsMutation.mutate();
   };
 
   return (
@@ -104,9 +117,6 @@ export default function CreateApplicationModal({ state, setState }) {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
-                  <div className={alertStyles}>
-                    <AlertComponent message={message} />
-                  </div>
                   <div className="mt-6 pb-3 text-center">
                     <Dialog.Title
                       as="h3"
@@ -121,6 +131,9 @@ export default function CreateApplicationModal({ state, setState }) {
                         recieve your new application's AIDN that you can start
                         using in your application.
                       </p>
+                    </div>
+                    <div className={alertStyles}>
+                      <AlertComponent message={message} />
                     </div>
                     <div id="new-application-form">
                       <div className="pb-3 pt-6">
