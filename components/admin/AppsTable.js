@@ -8,9 +8,6 @@ export default function AppsTableComponent() {
   const applicationsQuery = useQuery({
     queryKey: ["apps"],
     queryFn: async () => {
-      // create empty response variable
-      let response;
-
       try {
         // with this axios request, we need to set the proper headers for the server-side authentication
         // this includes: kreative_id_key, kreative_aidn
@@ -23,14 +20,14 @@ export default function AppsTableComponent() {
             },
           }
         );
+
+        const applications = response.data.data;
+        return applications;
       } catch (error) {
         // some sort of error, statusCode is not between 200-199
         console.log(error);
         // window.location.href = "/admin/error";
       }
-
-      const applications = response.data.data;
-      return applications;
     },
   });
 
