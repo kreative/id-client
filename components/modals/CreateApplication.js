@@ -1,16 +1,68 @@
 import { Fragment, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCookies } from "react-cookie";
+import axios from "axios";
+
+import AlertComponent from "../Alert";
 
 export default function CreateApplicationModal({ state, setState }) {
   const cancelButtonRef = useRef(null);
+  const queryClient = useQueryClient();
+  const [cookies] = useCookies(["kreative_id_key"]);
   const [appName, setAppName] = useState("");
   const [callback, setCallback] = useState("");
+  const [alertStyles, setAlertStyles] = useState("hidden");
+  const [message, setMessage] = useState("");
 
-  const createNewApplication = (e) => {
+  const appsMutation = useMutation({
+    mutationFn: async () => {
+      try {
+        response = await axios.post(
+          "https://id-api.kreativeusa.com/v1/applications",
+          {
+            callbackUrl: callback,
+            name: appName,
+          },
+          {
+            headers: {
+              KREATIVE_ID_KEY: cookies["kreative_id_key"],
+              KREATIVE_AIDN: process.env.NEXT_PUBLIC_AIDN,
+            },
+          }
+        );
+
+        
+        return response.data;
+      } catch (error) {
+        // some sort of error happened
+        console.log(error);
+      }
+
+    },
+    onError: (error) => {
+      // some sort of error occured
+      console.log(error);
+    },
+    onSuccess: () => {
+      // we tell queryClient that the cached data we currently have is invalid
+      // this will force a refetch that contains the newly created application
+      console.log("onSuccess started...");
+      queryClient.invalidateQueries({ queryKey: ["apps"] });
+    },
+  });
+
+  const createApplication = (e) => {
     // prevents default behavior on button click
     e.preventDefault();
 
-    // make sure both fields are filled out
+    // make sure both fields are filled out, if not show alert and break thread
+    if (appName === "" || callback === "") {
+      setMessage("Please fill out all fields");
+      setAlertStyles("");
+      return;
+    }
+
     // add 'https://' to the callback string that was entered
     // create a post request with axios attaching the right headers
     // handle any errors produced from the request
@@ -52,6 +104,9 @@ export default function CreateApplicationModal({ state, setState }) {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
+                  <div className={alertStyles}>
+                    <AlertComponent message={message} />
+                  </div>
                   <div className="mt-6 pb-3 text-center">
                     <Dialog.Title
                       as="h3"
@@ -118,7 +173,7 @@ export default function CreateApplicationModal({ state, setState }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-                    onClick={(e) => createNewApplication(e)}
+                    onClick={(e) => createApplication(e)}
                   >
                     Create application
                   </button>
