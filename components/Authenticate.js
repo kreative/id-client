@@ -13,7 +13,7 @@ export default function AuthenticateComponent({ children, permissions }) {
   // this sets default state to not authenticate so that the function won't render until useEffect has run
   const [authenticated, setAuthenticated] = useState(false);
   // the single cookie we need for this function, stores the key for the user
-  const [cookies, setCookie, removeCookie] = useCookies([
+  const [cookies, setCookie] = useCookies([
     "kreative_id_key",
     "keychain_id",
     "id_ksn",
