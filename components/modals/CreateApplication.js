@@ -133,8 +133,8 @@ export default function CreateApplicationModal({ state, setState }) {
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
                         Submit a name for the application and a valid callback
-                        URL for Kreative ID to redirect to. After that, you'll
-                        recieve your new application's AIDN that you can start
+                        URL for Kreative ID to redirect to. After that, you&apos;ll
+                        recieve your new application&apos;s AIDN that you can start
                         using in your application.
                       </p>
                     </div>

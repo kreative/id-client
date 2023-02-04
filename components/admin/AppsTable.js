@@ -45,7 +45,7 @@ export default function AppsTableComponent() {
   if (applicationsQuery.isError) {
     return (
       <h1 className="pt-6 text-center text-lg text-gray-700">
-        Error. Applications can't load.
+        Error. Applications can&apos;t load.
       </h1>
     );
   }
