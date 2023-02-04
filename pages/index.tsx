@@ -13,7 +13,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <main className="pt-16">
         <h1 className="pt-12 pb-3 text-center text-2xl">
           Welcome to Kreative ID, friend.
         </h1>
