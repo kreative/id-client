@@ -44,10 +44,10 @@ export default function ErrorComponent({ cause }) {
       <div className="flex min-h-full flex-col bg-white pt-16 pb-12">
         <main className="mx-auto flex w-full max-w-7xl flex-grow flex-col justify-center px-6 md:max-w-3xl lg:px-8">
           <div className="flex flex-shrink-0 justify-center">
-            <a href="/" className="inline-flex">
+            <Link href="/" className="inline-flex">
               <span className="sr-only">Kreative ID</span>
               <img className="h-12 w-auto" src="/kreative-id.png" alt="" />
-            </a>
+            </Link>
           </div>
           <div className="py-16">
             <div className="text-center">
