@@ -10,7 +10,7 @@ import { useCookies } from "react-cookie";
 export default function AuthPage() {
   const router = useRouter();
   const { key } = router.query;
-  const [cookies, setCookie, removeCookie] = useCookies(["kreative_id_key"]);
+  const [cookies, setCookie] = useCookies(["kreative_id_key"]);
   
   useEffect(() => {
     // ?? we never use this again, but it works, should we take it out ??
@@ -21,7 +21,6 @@ export default function AuthPage() {
 
     // function that executes business logic for callback auth flow
     const executeCallback = async () => {
-      console.log("callback: hello");
       // adds the cookie for the client side
       setCookie("kreative_id_key", key, { secure: true });
       // redirects to the admin page for authentication flow to continue
