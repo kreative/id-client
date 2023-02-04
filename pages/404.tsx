@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Link from "next/link";
 
 export default function NotFoundPage() {
   return (
@@ -34,13 +35,13 @@ export default function NotFoundPage() {
                 Sorry, we couldn’t find the page you’re looking for.
               </p>
               <div className="mt-6">
-                <a
+                <Link
                   href="#"
                   className="text-base font-medium text-indigo-600 hover:text-indigo-500"
                 >
                   Go to dashboard
                   <span aria-hidden="true"> &rarr;</span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
