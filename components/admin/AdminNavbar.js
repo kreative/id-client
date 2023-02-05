@@ -36,6 +36,7 @@ export default function AdminNavbarComponent() {
         removeCookie("id_picture");
 
         // redirects the user to the logout confirmation page
+        // TODO: make a better logout confirmation page
         window.location.href = "/logged-out";
       })
       .catch((error) => {
