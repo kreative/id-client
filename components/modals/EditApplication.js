@@ -11,7 +11,51 @@ export default function EditApplication() {
   const [callback, setCallback] = useState("");
   const [aidn, setAidn] = useState("");
 
-  const appsMutation = useMutation({
+  const singleAppQuery = useQuery({
+    queryKey: ["app", aidn],
+    queryFn: async () => {
+      // create empty response variable
+      let response;
+
+      try {
+        // with this axios request, we need to set the proper headers for the server-side authentication
+        // this includes: kreative_id_key, kreative_aidn
+        response = await axios.get(
+          `https://id-api.kreativeusa.com/v1/applications/${aidn}`,
+          {
+            headers: {
+              KREATIVE_ID_KEY: cookies["kreative_id_key"],
+              KREATIVE_AIDN: process.env.NEXT_PUBLIC_AIDN,
+            },
+          }
+        );
+      } catch (error) {
+        // some sort of error, statusCode is not between 200-199
+        console.log(error);
+      }
+
+      const application = response.data.data;
+      return application;
+    },
+  });
+
+  if (singleAppQuery.isLoading) {
+    return (
+      <h1 className="pt-6 text-center text-lg text-gray-700">
+        Application is loading...
+      </h1>
+    );
+  }
+
+  if (applicationsQuery.isError) {
+    return (
+      <h1 className="pt-6 text-center text-lg text-gray-700">
+        Error. Applications can&apos;t load.
+      </h1>
+    );
+  }
+
+  const singleAppMutation = useMutation({
     mutationFn: async () => {
       let response;
 
@@ -40,7 +84,9 @@ export default function EditApplication() {
       // some sort of error occured
       // handle any errors produced from the request
       console.log(error);
-      setMessage(`Internal server error occured. Please try again later. ERROR: ${error.message}`)
+      setMessage(
+        `Internal server error occured. Please try again later. ERROR: ${error.message}`
+      );
       setAlertStyles("");
     },
     onSuccess: () => {
@@ -61,7 +107,7 @@ export default function EditApplication() {
     e.preventDefault();
 
     // call the mutation function
-    appsMutation.mutate();
+    singleAppMutation.mutate();
   };
 
   return (
@@ -107,59 +153,71 @@ export default function EditApplication() {
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
                         Submit a name for the application and a valid callback
-                        URL for Kreative ID to redirect to. After that, you&apos;ll
-                        recieve your new application&apos;s AIDN that you can start
-                        using in your application.
+                        URL for Kreative ID to redirect to. After that,
+                        you&apos;ll recieve your new application&apos;s AIDN
+                        that you can start using in your application.
                       </p>
                     </div>
                     <div className={alertStyles}>
                       <AlertComponent message={message} />
                     </div>
-                    <div id="new-application-form">
-                      <div className="pb-3 pt-6">
-                        <label
-                          htmlFor="email"
-                          className="block text-left text-sm font-medium text-gray-700"
-                        >
-                          Application Name
-                        </label>
-                        <div className="mt-1">
-                          <input
-                            type="text"
-                            name="appName"
-                            id="appName"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="Kreative DreamFactory"
-                            required
-                            value={appName}
-                            onChange={(e) => setAppName(e.target.value)}
-                          />
+                    {singleAppQuery.isLoading && (
+                      <h1 className="pt-6 text-center text-lg text-gray-700">
+                        Application is loading...
+                      </h1>
+                    )}
+                    {singleAppQuery.isError && (
+                      <h1 className="pt-6 text-center text-lg text-gray-700">
+                        Error. Applications can&apos;t load.
+                      </h1>
+                    )}
+                    {singleAppQuery.isSuccess && (
+                      <div id="new-application-form">
+                        <div className="pb-3 pt-6">
+                          <label
+                            htmlFor="email"
+                            className="block text-left text-sm font-medium text-gray-700"
+                          >
+                            Application Name
+                          </label>
+                          <div className="mt-1">
+                            <input
+                              type="text"
+                              name="appName"
+                              id="appName"
+                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              placeholder="Kreative DreamFactory"
+                              required
+                              value={appName}
+                              onChange={(e) => setAppName(e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="pt-3">
+                          <label
+                            htmlFor="company-website"
+                            className="block text-left text-sm font-medium text-gray-700"
+                          >
+                            Callback URL
+                          </label>
+                          <div className="mt-1 flex rounded-md shadow-sm">
+                            <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
+                              https://
+                            </span>
+                            <input
+                              type="text"
+                              name="callback-url"
+                              id="callback-url"
+                              className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              placeholder="kreativeusa.com"
+                              required
+                              value={callback}
+                              onChange={(e) => setCallback(e.target.value)}
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="pt-3">
-                        <label
-                          htmlFor="company-website"
-                          className="block text-left text-sm font-medium text-gray-700"
-                        >
-                          Callback URL
-                        </label>
-                        <div className="mt-1 flex rounded-md shadow-sm">
-                          <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
-                            https://
-                          </span>
-                          <input
-                            type="text"
-                            name="callback-url"
-                            id="callback-url"
-                            className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="kreativeusa.com"
-                            required
-                            value={callback}
-                            onChange={(e) => setCallback(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
@@ -168,7 +226,7 @@ export default function EditApplication() {
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
                     onClick={(e) => createApplication(e)}
                   >
-                    Create application
+                    Update application
                   </button>
                   <button
                     type="button"
