@@ -1,45 +1,18 @@
 import { useState } from "react";
 import { useCookies } from "react-cookie";
 
-export default function EditApplication() {
+export default function EditApplication({ givenName, givenCallback, givenAidn, state, setState }) {
   const [cookies] = useCookies(["kreative_id_key"]);
   const [alertStyles, setAlertStyles] = useState("hidden");
   const [message, setMessage] = useState("");
 
   // application detail variables
-  const [appName, setAppName] = useState("");
-  const [callback, setCallback] = useState("");
-  const [aidn, setAidn] = useState("");
+  const [appName, setAppName] = useState(givenName);
+  const [callback, setCallback] = useState(givenCallback);
+  const [aidn, setAidn] = useState(givenAidn);
 
-  const singleAppQuery = useQuery({
-    queryKey: ["app", aidn],
-    queryFn: async () => {
-      // create empty response variable
-      let response;
-
-      try {
-        // with this axios request, we need to set the proper headers for the server-side authentication
-        // this includes: kreative_id_key, kreative_aidn
-        response = await axios.get(
-          `https://id-api.kreativeusa.com/v1/applications/${aidn}`,
-          {
-            headers: {
-              KREATIVE_ID_KEY: cookies["kreative_id_key"],
-              KREATIVE_AIDN: process.env.NEXT_PUBLIC_AIDN,
-            },
-          }
-        );
-      } catch (error) {
-        // some sort of error, statusCode is not between 200-199
-        console.log(error);
-      }
-
-      const application = response.data.data;
-      return application;
-    },
-  });
-
-  const singleAppMutation = useMutation({
+  // updates the application details
+  const editAppMutation = useMutation({
     mutationFn: async () => {
       let response;
 
@@ -91,8 +64,8 @@ export default function EditApplication() {
     // prevents default behavior of form submission
     e.preventDefault();
 
-    // call the mutation function
-    singleAppMutation.mutate();
+    // call the edit app mutation function
+    editAppMutation.mutate();
   };
 
   return (
