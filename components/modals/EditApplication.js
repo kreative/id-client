@@ -39,22 +39,6 @@ export default function EditApplication() {
     },
   });
 
-  if (singleAppQuery.isLoading) {
-    return (
-      <h1 className="pt-6 text-center text-lg text-gray-700">
-        Application is loading...
-      </h1>
-    );
-  }
-
-  if (applicationsQuery.isError) {
-    return (
-      <h1 className="pt-6 text-center text-lg text-gray-700">
-        Error. Applications can&apos;t load.
-      </h1>
-    );
-  }
-
   const singleAppMutation = useMutation({
     mutationFn: async () => {
       let response;
@@ -104,6 +88,7 @@ export default function EditApplication() {
   });
 
   const handleSubmit = (e) => {
+    // prevents default behavior of form submission
     e.preventDefault();
 
     // call the mutation function
