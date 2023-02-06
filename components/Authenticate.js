@@ -42,7 +42,6 @@ export default function AuthenticateComponent({ children, permissions }) {
             aidn: parseInt(AIDN),
           })
           .then((response) => {
-            console.log(response);
             // successful response from the server, should be code 200 (maybe 201)
             if (response.data.statusCode === 200) {
               const account = response.data.data.account;
@@ -60,7 +59,6 @@ export default function AuthenticateComponent({ children, permissions }) {
                 // user does not have the correct permissions to continue
                 // we can't just say the user isn't authenticated, because they are, they just don't have the correct permissions
                 // FOR NOW we will handle the error by redirecting the user to the error page with a query param for the error
-                console.log("invalid permissions");
                 window.location.href = "/error?cause=permissions";
               } else {
                 // since we can't add headers, since we are executing this on the client side, we will just setup new cookies
@@ -80,9 +78,6 @@ export default function AuthenticateComponent({ children, permissions }) {
             // the HTTPS status code is not between 200-299
             // verification of the key has failed for some reason
             // possible reasons include: expired keychain, aidn mismatch, internal server error, not found (rare)
-            console.log("we ran into an error...");
-            console.log(error);
-
             if (error.response.data.statusCode === 500) {
               // internal server error
               // since there is something on the server side that isn't working reauthenticating wont work
@@ -99,7 +94,6 @@ export default function AuthenticateComponent({ children, permissions }) {
               window.location.href = `/signin?aidn=${AIDN}`;
             } else {
               // some sort of unknown error, possibly on the client side itseld
-              console.log(error);
               window.location.href = "/error?cause=unknown";
             }
           });
