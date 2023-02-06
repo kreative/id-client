@@ -47,13 +47,13 @@ const craftworkSans = localFont({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <CookiesProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <CookiesProvider>
         <div className={`${craftworkSans.variable} font-sans`}>
           <Component {...pageProps} />
         </div>
-        <ReactQueryDevtools />
-      </QueryClientProvider>
-    </CookiesProvider>
+      </CookiesProvider>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   );
 }
