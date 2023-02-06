@@ -35,18 +35,10 @@ export default function AppsTableComponent() {
     enabled: true,
   });
 
-  if (applicationsQuery.isFetching) {
+  if (applicationsQuery.isFetching || applicationsQuery.isLoading) {
     return (
       <h1 className="pt-6 text-center text-lg text-gray-700">
-        Applications are being fetched...
-      </h1>
-    );
-  }
-
-  if (applicationsQuery.isLoading) {
-    return (
-      <h1 className="pt-6 text-center text-lg text-gray-700">
-        Applications are loading...
+        Applications are being fetched and loaded...
       </h1>
     );
   }
