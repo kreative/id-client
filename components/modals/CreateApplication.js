@@ -22,14 +22,15 @@ export default function CreateApplicationModal({ state, setState }) {
   }
 
   const appsMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (newCallback) => {
       let response;
+      console.log("mutation started");
 
       try {
         response = await axios.post(
           "https://id-api.kreativeusa.com/v1/applications",
           {
-            callbackUrl: callback,
+            callbackUrl: newCallback,
             name: appName,
           },
           {
@@ -84,11 +85,15 @@ export default function CreateApplicationModal({ state, setState }) {
     }
 
     // add 'https://' to the callback string that was entered
-    setCallback(`https://${callback}`);
+    const newCallback = `https://${callback}`;
 
     // calls the mutation to create a new application
-    appsMutation.mutate();
+    appsMutation.mutate(newCallback);
   };
+
+  if (appsMutation.isLoading) console.log("mutation loading...");
+  if (appsMutation.isError) console.log("mutation error...");
+  if (appsMutation.isSuccess) console.log("mutation success...");
 
   return (
     <Transition.Root show={state} as={Fragment}>
