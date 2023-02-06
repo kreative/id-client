@@ -11,8 +11,6 @@ export default function AppsTableComponent() {
       // create empty response variable
       let response;
 
-      console.log("apps query started");
-
       try {
         // with this axios request, we need to set the proper headers for the server-side authentication
         // this includes: kreative_id_key, kreative_aidn
@@ -36,8 +34,6 @@ export default function AppsTableComponent() {
     },
     enabled: true,
   });
-
-  console.log(applicationsQuery);
 
   if (applicationsQuery.isFetching) {
     return (

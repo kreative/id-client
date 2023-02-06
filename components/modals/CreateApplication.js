@@ -24,7 +24,6 @@ export default function CreateApplicationModal({ state, setState }) {
   const appsMutation = useMutation({
     mutationFn: async (newCallback) => {
       let response;
-      console.log("mutation started");
 
       try {
         response = await axios.post(
