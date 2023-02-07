@@ -1,17 +1,25 @@
 import React, { useState } from "react";
+import { useAtom } from "jotai";
 
 import AppsTableComponent from "./AppsTable";
 import CreateApplicationModal from "@/components/modals/CreateApplication";
+import EditApplicationModal from "@/components/modals/EditApplication";
 import AdminNavbarComponent from "@/components/admin/AdminNavbar";
+
+import { editAppModalStore } from "@/stores/editAppModalStore";
 
 export default function AdminComponent() {
   // state for create application modal
   const [modalState, setModalState] = useState(false);
 
+  // global state for edit application modal
+  const [editState, setEditState] = useAtom(editAppModalStore);
+
   return (
     <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
       <AdminNavbarComponent />
       <CreateApplicationModal state={modalState} setState={setModalState} />
+      <EditApplicationModal state={editState} setState={setEditState} />
       <div className="pt-12">
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">

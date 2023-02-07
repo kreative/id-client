@@ -1,19 +1,32 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCookies } from "react-cookie";
+import { useAtom } from "jotai";
+import axios from "axios";
 
+import { appDataStore } from "@/stores/appDataStore";
 import AlertComponent from "../Alert";
 
-export default function EditApplication({ givenName, givenCallback, givenAidn, state, setState }) {
+export default function EditApplicationModal({ state, setState }) {
+  const cancelButtonRef = useRef(null);
+  const queryClient = useQueryClient();
   const [cookies] = useCookies(["kreative_id_key"]);
   const [alertStyles, setAlertStyles] = useState("hidden");
   const [message, setMessage] = useState("");
 
-  // application detail variables
-  const [appName, setAppName] = useState(givenName);
-  const [callback, setCallback] = useState(givenCallback);
-  const [aidn, setAidn] = useState(givenAidn);
+  // global states
+  const [appData, setAppData] = useAtom(appDataStore);
+
+  // temporary states, initialized to be empty
+  const [appName, setAppName] = useState("");
+  const [callback, setCallback] = useState("");
+
+  // sets the local states based on appData global state
+  useEffect(() => {
+    setAppName(appData.name);
+    setCallback(appData.callback);
+  }, [appData]);
 
   // updates the application details
   const editAppMutation = useMutation({
@@ -78,7 +91,7 @@ export default function EditApplication({ givenName, givenCallback, givenAidn, s
         as="div"
         className="relative z-10"
         initialFocus={cancelButtonRef}
-        onClose={setOpen}
+        onClose={setState}
       >
         <Transition.Child
           as={Fragment}
@@ -110,76 +123,61 @@ export default function EditApplication({ givenName, givenCallback, givenAidn, s
                       as="h3"
                       className="text-2xl font-bold leading-6 text-gray-900"
                     >
-                      Edit appplication
+                      Edit &apos;{appData.name}&apos; ({appData.aidn})
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Submit a name for the application and a valid callback
-                        URL for Kreative ID to redirect to. After that,
-                        you&apos;ll recieve your new application&apos;s AIDN
-                        that you can start using in your application.
+                        Modify the callback URL or application name.
                       </p>
                     </div>
                     <div className={alertStyles}>
                       <AlertComponent message={message} />
                     </div>
-                    {singleAppQuery.isLoading && (
-                      <h1 className="pt-6 text-center text-lg text-gray-700">
-                        Application is loading...
-                      </h1>
-                    )}
-                    {singleAppQuery.isError && (
-                      <h1 className="pt-6 text-center text-lg text-gray-700">
-                        Error. Applications can&apos;t load.
-                      </h1>
-                    )}
-                    {singleAppQuery.isSuccess && (
-                      <div id="new-application-form">
-                        <div className="pb-3 pt-6">
-                          <label
-                            htmlFor="email"
-                            className="block text-left text-sm font-medium text-gray-700"
-                          >
-                            Application Name
-                          </label>
-                          <div className="mt-1">
-                            <input
-                              type="text"
-                              name="appName"
-                              id="appName"
-                              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              placeholder="Kreative DreamFactory"
-                              required
-                              value={appName}
-                              onChange={(e) => setAppName(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className="pt-3">
-                          <label
-                            htmlFor="company-website"
-                            className="block text-left text-sm font-medium text-gray-700"
-                          >
-                            Callback URL
-                          </label>
-                          <div className="mt-1 flex rounded-md shadow-sm">
-                            <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
-                              https://
-                            </span>
-                            <input
-                              type="text"
-                              name="callback-url"
-                              id="callback-url"
-                              className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              placeholder="kreativeusa.com"
-                              required
-                              value={callback}
-                              onChange={(e) => setCallback(e.target.value)}
-                            />
-                          </div>
+                    <div id="new-application-form">
+                      <div className="pb-3 pt-6">
+                        <label
+                          htmlFor="email"
+                          className="block text-left text-sm font-medium text-gray-700"
+                        >
+                          Application Name
+                        </label>
+                        <div className="mt-1">
+                          <input
+                            type="text"
+                            name="appName"
+                            id="appName"
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            placeholder="Kreative DreamFactory"
+                            required
+                            value={appName}
+                            onChange={(e) => setAppName(e.target.value)}
+                          />
                         </div>
                       </div>
-                    )}
+                      <div className="pt-3">
+                        <label
+                          htmlFor="company-website"
+                          className="block text-left text-sm font-medium text-gray-700"
+                        >
+                          Callback URL
+                        </label>
+                        <div className="mt-1 flex rounded-md shadow-sm">
+                          <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
+                            https://
+                          </span>
+                          <input
+                            type="text"
+                            name="callback-url"
+                            id="callback-url"
+                            className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            placeholder="kreativeusa.com"
+                            required
+                            value={callback}
+                            onChange={(e) => setCallback(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
@@ -193,7 +191,7 @@ export default function EditApplication({ givenName, givenCallback, givenAidn, s
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-                    onClick={() => setOpen(false)}
+                    onClick={() => setState(false)}
                     ref={cancelButtonRef}
                   >
                     Close
