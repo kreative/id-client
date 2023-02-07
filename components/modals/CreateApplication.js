@@ -22,14 +22,14 @@ export default function CreateApplicationModal({ state, setState }) {
   }
 
   const appsMutation = useMutation({
-    mutationFn: async (newCallback) => {
+    mutationFn: async (callback) => {
       let response;
 
       try {
         response = await axios.post(
           "https://id-api.kreativeusa.com/v1/applications",
           {
-            callbackUrl: newCallback,
+            callbackUrl: callback,
             name: appName,
           },
           {
