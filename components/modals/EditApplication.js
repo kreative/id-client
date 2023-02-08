@@ -76,8 +76,6 @@ export default function EditApplicationModal({ state, setState }) {
     onSuccess: () => {
       // close the modal since the method completely succeeded
       setState(false);
-      // clear out the values from the global state
-      setAppData({ name: "", aidn: "", callback: "" });
       // invalidate the query so that the data will be refreshed
       queryClient.invalidateQueries("applications");
     },
@@ -107,6 +105,52 @@ export default function EditApplicationModal({ state, setState }) {
     const url = `https://id-api.kreativeusa.com/v1/applications/${appData.aidn}`;
     // call the edit app mutation function
     editAppMutation.mutate(url);
+  };
+
+  // deletes the application from the database
+  const deleteAppMutation = useMutation({
+    mutationFn: async (url) => {
+      let response;
+
+      try {
+        response = await axios.delete(url, {
+          headers: {
+            KREATIVE_ID_KEY: cookies["kreative_id_key"],
+            KREATIVE_AIDN: process.env.NEXT_PUBLIC_AIDN,
+          },
+        });
+      } catch (error) {
+        // some sort of error happened
+        console.log(error);
+        throw new Error(error.message);
+      }
+
+      return response.data;
+    },
+    onError: (error) => {
+      // some sort of error occured
+      // handle any errors produced from the request
+      console.log(error);
+      setMessage(
+        `Internal server error occured. Please try again later. ERROR: ${error.message}`
+      );
+      setAlertStyles("");
+    },
+    onSuccess: (data) => {
+      // close the modal since the method completely succeeded
+      setState(false);
+      // invalidate the query so that the data will be refreshed
+      queryClient.invalidateQueries("applications");
+    },
+  });
+
+  const deleteApplication = (e) => {
+    // prevents default behavior of form submission
+    e.preventDefault();
+    // creates the url to send the request to
+    const url = `https://id-api.kreativeusa.com/v1/applications/${appData.aidn}`;
+    // call the delete app mutation function
+    deleteAppMutation.mutate(url);
   };
 
   return (
@@ -217,6 +261,16 @@ export default function EditApplicationModal({ state, setState }) {
                   >
                     Close
                   </button>
+                </div>
+                <div className="flex items-center justify-center">
+                  <span className="pt-4">
+                    <button 
+                      className="text-md inline-flex items-center justify-center font-medium text-red-600 shadow-sm hover:text-red-400 sm:w-auto"
+                      onClick={(e) => deleteApplication(e)}
+                    >
+                      Delete application
+                    </button>
+                  </span>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
