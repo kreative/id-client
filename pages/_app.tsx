@@ -4,6 +4,7 @@ import { CookiesProvider } from "react-cookie";
 import localFont from "@next/font/local";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Provider } from "jotai";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -48,11 +49,13 @@ const craftworkSans = localFont({
 export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <CookiesProvider>
-        <div className={`${craftworkSans.variable} font-sans`}>
-          <Component {...pageProps} />
-        </div>
-      </CookiesProvider>
+      <Provider>
+        <CookiesProvider>
+          <div className={`${craftworkSans.variable} font-sans`}>
+            <Component {...pageProps} />
+          </div>
+        </CookiesProvider>
+      </Provider>
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

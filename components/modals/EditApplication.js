@@ -1,33 +1,50 @@
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCookies } from "react-cookie";
+import { useAtom } from "jotai";
 import axios from "axios";
 
+import { appDataStore } from "@/stores/appDataStore";
 import AlertComponent from "../Alert";
 
-export default function CreateApplicationModal({ state, setState }) {
+export default function EditApplicationModal({ state, setState }) {
   const cancelButtonRef = useRef(null);
   const queryClient = useQueryClient();
-
   const [cookies] = useCookies(["kreative_id_key"]);
-  const [appName, setAppName] = useState("");
-  const [callback, setCallback] = useState("");
   const [alertStyles, setAlertStyles] = useState("hidden");
   const [message, setMessage] = useState("");
+
+  // global states
+  const [appData, setAppData] = useAtom(appDataStore);
+
+  // temporary states, initialized to be empty
+  const [appName, setAppName] = useState("");
+  const [callback, setCallback] = useState("");
+
+  // sets the local states based on appData global state
+  // there is some sort of async issue where setting the default value of the temp states
+  // to the appData variables results in undefined default values, so we do it here
+  // also going to hide any alert messages
+  useEffect(() => {
+    setAlertStyles("hidden");
+    setAppName(appData.name);
+    setCallback(appData.callback);
+  }, [appData]);
 
   const setOpen = (isOpen) => {
     setState(isOpen);
     setAlertStyles("hidden");
-  }
+  };
 
-  const appsMutation = useMutation({
-    mutationFn: async (callback) => {
+  // updates the application details
+  const editAppMutation = useMutation({
+    mutationFn: async (url) => {
       let response;
 
       try {
         response = await axios.post(
-          "https://id-api.kreativeusa.com/v1/applications",
+          url,
           {
             callbackUrl: callback,
             name: appName,
@@ -51,48 +68,43 @@ export default function CreateApplicationModal({ state, setState }) {
       // some sort of error occured
       // handle any errors produced from the request
       console.log(error);
-      setMessage(`Internal server error occured. Please try again later. ERROR: ${error.message}`)
+      setMessage(
+        `Internal server error occured. Please try again later. ERROR: ${error.message}`
+      );
       setAlertStyles("");
     },
     onSuccess: () => {
-      console.log("onSuccess started...");
       // close the modal since the method completely succeeded
       setState(false);
 
-      // clear out the values from the state
-      setCallback("");
-      setAppName("");
+      // clear out the values from the global state
+      setAppData({ name: "", aidn: "", callback: "" });
 
-      // we tell queryClient that the cached data we currently have is invalid
-      // this will force a refetch that contains the newly created application
-      queryClient.invalidateQueries({ queryKey: ["apps"] });
+      // invalidate the query so that the data will be refreshed
+      queryClient.invalidateQueries("applications");
     },
   });
 
-  const createApplication = (e) => {
-    // prevents default behavior on button click
+  const editApplication = (e) => {
+    // prevents default behavior of form submission
     e.preventDefault();
 
-    // hides any alert messages that may be showing
+    // hide any alert messages
     setAlertStyles("hidden");
 
-    // make sure both fields are filled out, if not show alert and break thread
+    // makes sure both fields actually have values
     if (appName === "" || callback === "") {
-      setMessage("Please fill out all fields");
+      setMessage("Please fill out all fields.");
       setAlertStyles("");
       return;
     }
 
-    // add 'https://' to the callback string that was entered
-    const newCallback = `https://${callback}`;
+    // creates the url to send the request to
+    const url = `https://id-api.kreativeusa.com/v1/applications/${appData.aidn}`;
 
-    // calls the mutation to create a new application
-    appsMutation.mutate(newCallback);
+    // call the edit app mutation function
+    editAppMutation.mutate(url);
   };
-
-  if (appsMutation.isLoading) console.log("mutation loading...");
-  if (appsMutation.isError) console.log("mutation error...");
-  if (appsMutation.isSuccess) console.log("mutation success...");
 
   return (
     <Transition.Root show={state} as={Fragment}>
@@ -132,14 +144,11 @@ export default function CreateApplicationModal({ state, setState }) {
                       as="h3"
                       className="text-2xl font-bold leading-6 text-gray-900"
                     >
-                      Create new application
+                      Edit {appData.name} ({appData.aidn})
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
-                        Submit a name for the application and a valid callback
-                        URL for Kreative ID to redirect to. After that, you&apos;ll
-                        recieve your new application&apos;s AIDN that you can start
-                        using in your application.
+                        Modify the callback URL or application name.
                       </p>
                     </div>
                     <div className={alertStyles}>
@@ -174,14 +183,11 @@ export default function CreateApplicationModal({ state, setState }) {
                           Callback URL
                         </label>
                         <div className="mt-1 flex rounded-md shadow-sm">
-                          <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
-                            https://
-                          </span>
                           <input
                             type="text"
                             name="callback-url"
                             id="callback-url"
-                            className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="block w-full min-w-0 flex-1 rounded-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             placeholder="kreativeusa.com"
                             required
                             value={callback}
@@ -196,9 +202,9 @@ export default function CreateApplicationModal({ state, setState }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-                    onClick={(e) => createApplication(e)}
+                    onClick={(e) => editApplication(e)}
                   >
-                    Create application
+                    Update application
                   </button>
                   <button
                     type="button"
