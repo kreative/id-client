@@ -76,10 +76,8 @@ export default function EditApplicationModal({ state, setState }) {
     onSuccess: () => {
       // close the modal since the method completely succeeded
       setState(false);
-
       // clear out the values from the global state
       setAppData({ name: "", aidn: "", callback: "" });
-
       // invalidate the query so that the data will be refreshed
       queryClient.invalidateQueries("applications");
     },
@@ -88,7 +86,6 @@ export default function EditApplicationModal({ state, setState }) {
   const editApplication = (e) => {
     // prevents default behavior of form submission
     e.preventDefault();
-
     // hide any alert messages
     setAlertStyles("hidden");
 
@@ -101,7 +98,6 @@ export default function EditApplicationModal({ state, setState }) {
 
     // creates the url to send the request to
     const url = `https://id-api.kreativeusa.com/v1/applications/${appData.aidn}`;
-
     // call the edit app mutation function
     editAppMutation.mutate(url);
   };
