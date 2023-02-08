@@ -92,6 +92,7 @@ export default function AppsTableComponent() {
                   <tbody className="divide-y divide-gray-200 bg-white">
                     {applicationsQuery.data.map((app) => (
                       <AppRowComponent
+                        key={app.aidn}
                         aidn={app.aidn}
                         name={app.name}
                         callback={app.callbackUrl}
