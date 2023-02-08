@@ -76,10 +76,6 @@ export default function EditApplicationModal({ state, setState }) {
     onSuccess: () => {
       // close the modal since the method completely succeeded
       setState(false);
-
-      // clear out the values from the global state
-      setAppData({ name: "", aidn: "", callback: "" });
-
       // invalidate the query so that the data will be refreshed
       queryClient.invalidateQueries("applications");
     },
@@ -88,7 +84,6 @@ export default function EditApplicationModal({ state, setState }) {
   const editApplication = (e) => {
     // prevents default behavior of form submission
     e.preventDefault();
-
     // hide any alert messages
     setAlertStyles("hidden");
 
@@ -99,11 +94,63 @@ export default function EditApplicationModal({ state, setState }) {
       return;
     }
 
+    // checks to see if both fields are the same as the global state
+    if (appName === appData.name && callback === appData.callback) {
+      setMessage("No changes were made.");
+      setAlertStyles("");
+      return;
+    }
+
     // creates the url to send the request to
     const url = `https://id-api.kreativeusa.com/v1/applications/${appData.aidn}`;
-
     // call the edit app mutation function
     editAppMutation.mutate(url);
+  };
+
+  // deletes the application from the database
+  const deleteAppMutation = useMutation({
+    mutationFn: async (url) => {
+      let response;
+
+      try {
+        response = await axios.delete(url, {
+          headers: {
+            KREATIVE_ID_KEY: cookies["kreative_id_key"],
+            KREATIVE_AIDN: process.env.NEXT_PUBLIC_AIDN,
+          },
+        });
+      } catch (error) {
+        // some sort of error happened
+        console.log(error);
+        throw new Error(error.message);
+      }
+
+      return response.data;
+    },
+    onError: (error) => {
+      // some sort of error occured
+      // handle any errors produced from the request
+      console.log(error);
+      setMessage(
+        `Internal server error occured. Please try again later. ERROR: ${error.message}`
+      );
+      setAlertStyles("");
+    },
+    onSuccess: (data) => {
+      // close the modal since the method completely succeeded
+      setState(false);
+      // invalidate the query so that the data will be refreshed
+      queryClient.invalidateQueries("applications");
+    },
+  });
+
+  const deleteApplication = (e) => {
+    // prevents default behavior of form submission
+    e.preventDefault();
+    // creates the url to send the request to
+    const url = `https://id-api.kreativeusa.com/v1/applications/${appData.aidn}`;
+    // call the delete app mutation function
+    deleteAppMutation.mutate(url);
   };
 
   return (
@@ -201,19 +248,29 @@ export default function EditApplicationModal({ state, setState }) {
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
+                    className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 sm:col-start-2 sm:text-sm"
                     onClick={(e) => editApplication(e)}
                   >
                     Update application
                   </button>
                   <button
                     type="button"
-                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
+                    className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 sm:col-start-1 sm:mt-0 sm:text-sm"
                     onClick={() => setOpen(false)}
                     ref={cancelButtonRef}
                   >
                     Close
                   </button>
+                </div>
+                <div className="flex items-center justify-center">
+                  <span className="pt-4">
+                    <button 
+                      className="text-md inline-flex items-center justify-center font-medium text-red-600 shadow-sm hover:text-red-400 sm:w-auto"
+                      onClick={(e) => deleteApplication(e)}
+                    >
+                      Delete application
+                    </button>
+                  </span>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
