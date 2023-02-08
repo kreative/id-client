@@ -96,6 +96,13 @@ export default function EditApplicationModal({ state, setState }) {
       return;
     }
 
+    // checks to see if both fields are the same as the global state
+    if (appName === appData.name && callback === appData.callback) {
+      setMessage("No changes were made.");
+      setAlertStyles("");
+      return;
+    }
+
     // creates the url to send the request to
     const url = `https://id-api.kreativeusa.com/v1/applications/${appData.aidn}`;
     // call the edit app mutation function
