@@ -37,12 +37,6 @@ export default function AppRowComponent({ aidn, name, callback }) {
               Edit
             </button>
           </span>
-          <button
-            className="inline-flex items-center justify-center text-sm font-medium text-indigo-700 shadow-sm hover:text-indigo-400 sm:w-auto"
-            onClick={(e) => setDeleteModalState(true)}
-          >
-            Delete
-          </button>
         </td>
       </tr>
     </>
