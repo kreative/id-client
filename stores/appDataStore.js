@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 
 const appDataStore = atom({
-  aidn: "",
+  aidn: 0,
   name: "",
   callback: "",
 });

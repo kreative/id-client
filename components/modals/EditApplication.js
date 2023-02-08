@@ -23,19 +23,28 @@ export default function EditApplicationModal({ state, setState }) {
   const [callback, setCallback] = useState("");
 
   // sets the local states based on appData global state
+  // there is some sort of async issue where setting the default value of the temp states
+  // to the appData variables results in undefined default values, so we do it here
+  // also going to hide any alert messages
   useEffect(() => {
+    setAlertStyles("hidden");
     setAppName(appData.name);
     setCallback(appData.callback);
   }, [appData]);
 
+  const setOpen = (isOpen) => {
+    setState(isOpen);
+    setAlertStyles("hidden");
+  };
+
   // updates the application details
   const editAppMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (url) => {
       let response;
 
       try {
         response = await axios.post(
-          `https://id-api.kreativeusa.com/v1/applications/${aidn}}`,
+          url,
           {
             callbackUrl: callback,
             name: appName,
@@ -50,6 +59,7 @@ export default function EditApplicationModal({ state, setState }) {
       } catch (error) {
         // some sort of error happened
         console.log(error);
+        throw new Error(error.message);
       }
 
       return response.data;
@@ -64,25 +74,36 @@ export default function EditApplicationModal({ state, setState }) {
       setAlertStyles("");
     },
     onSuccess: () => {
-      console.log("onSuccess started...");
       // close the modal since the method completely succeeded
       setState(false);
 
-      // clear out the values from the state
-      setCallback("");
-      setAppName("");
+      // clear out the values from the global state
+      setAppData({ name: "", aidn: "", callback: "" });
 
       // invalidate the query so that the data will be refreshed
       queryClient.invalidateQueries("applications");
     },
   });
 
-  const handleSubmit = (e) => {
+  const editApplication = (e) => {
     // prevents default behavior of form submission
     e.preventDefault();
 
+    // hide any alert messages
+    setAlertStyles("hidden");
+
+    // makes sure both fields actually have values
+    if (appName === "" || callback === "") {
+      setMessage("Please fill out all fields.");
+      setAlertStyles("");
+      return;
+    }
+
+    // creates the url to send the request to
+    const url = `https://id-api.kreativeusa.com/v1/applications/${appData.aidn}`;
+
     // call the edit app mutation function
-    editAppMutation.mutate();
+    editAppMutation.mutate(url);
   };
 
   return (
@@ -91,7 +112,7 @@ export default function EditApplicationModal({ state, setState }) {
         as="div"
         className="relative z-10"
         initialFocus={cancelButtonRef}
-        onClose={setState}
+        onClose={setOpen}
       >
         <Transition.Child
           as={Fragment}
@@ -123,7 +144,7 @@ export default function EditApplicationModal({ state, setState }) {
                       as="h3"
                       className="text-2xl font-bold leading-6 text-gray-900"
                     >
-                      Edit &apos;{appData.name}&apos; ({appData.aidn})
+                      Edit {appData.name} ({appData.aidn})
                     </Dialog.Title>
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
@@ -162,14 +183,11 @@ export default function EditApplicationModal({ state, setState }) {
                           Callback URL
                         </label>
                         <div className="mt-1 flex rounded-md shadow-sm">
-                          <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
-                            https://
-                          </span>
                           <input
                             type="text"
                             name="callback-url"
                             id="callback-url"
-                            className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="block w-full min-w-0 flex-1 rounded-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             placeholder="kreativeusa.com"
                             required
                             value={callback}
@@ -184,14 +202,14 @@ export default function EditApplicationModal({ state, setState }) {
                   <button
                     type="button"
                     className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-2 sm:text-sm"
-                    onClick={(e) => createApplication(e)}
+                    onClick={(e) => editApplication(e)}
                   >
                     Update application
                   </button>
                   <button
                     type="button"
                     className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm"
-                    onClick={() => setState(false)}
+                    onClick={() => setOpen(false)}
                     ref={cancelButtonRef}
                   >
                     Close
