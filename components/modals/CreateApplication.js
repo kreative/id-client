@@ -41,8 +41,8 @@ export default function CreateApplicationModal({ state, setState }) {
         );
       } catch (error) {
         // some sort of error happened
-        // TODO: handle this error much better
         console.log(error);
+        throw new Error(error.message);
       }
 
       return response.data;
@@ -73,9 +73,8 @@ export default function CreateApplicationModal({ state, setState }) {
     // prevents default behavior on button click
     e.preventDefault();
 
-    // resets the alert component messag eand styles
+    // hides any alert messages that may be showing
     setAlertStyles("hidden");
-    setMessage("");
 
     // make sure both fields are filled out, if not show alert and break thread
     if (appName === "" || callback === "") {
