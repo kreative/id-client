@@ -1,7 +1,7 @@
 import { useAtom } from "jotai";
 
-import { editAppModalStore } from "../../stores/editAppModalStore";
-import { appDataStore } from "../../stores/appDataStore";
+import { editAppModalStore } from "../../../stores/editAppModalStore";
+import { appDataStore } from "../../../stores/appDataStore";
 
 export default function AppRowComponent({ aidn, name, callback }) {
   const [editState, setEditState] = useAtom(editAppModalStore);
@@ -35,6 +35,11 @@ export default function AppRowComponent({ aidn, name, callback }) {
               onClick={modifyEditAppModalState}
             >
               Edit
+            </button>
+          </span>
+          <span>
+            <button className="inline-flex items-center justify-center text-sm font-medium text-indigo-700 shadow-sm hover:text-indigo-400 sm:w-auto">
+              View
             </button>
           </span>
         </td>
