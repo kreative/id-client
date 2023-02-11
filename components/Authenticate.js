@@ -62,12 +62,12 @@ export default function AuthenticateComponent({ children, permissions }) {
                 window.location.href = "/error?cause=permissions";
               } else {
                 // since we can't add headers, since we are executing this on the client side, we will just setup new cookies
-                setCookie('keychain_id', keychain.id);
-                setCookie('id_ksn', account.ksn);
-                setCookie('id_email', account.email);
-                setCookie('id_fname', account.firstName);
-                setCookie('id_lname', account.lastName);
-                setCookie('id_picture', account.profilePicture);
+                setCookie('keychain_id', keychain.id, { secure: true, sameSite: 'strict' });
+                setCookie('id_ksn', account.ksn, { secure: true, sameSite: 'strict' });
+                setCookie('id_email', account.email, { secure: true, sameSite: 'strict' });
+                setCookie('id_fname', account.firstName, { secure: true, sameSite: 'strict' });
+                setCookie('id_lname', account.lastName, { secure: true, sameSite: 'strict' });
+                setCookie('id_picture', account.profilePicture, { secure: true, sameSite: 'strict' });
 
                 // once all operations are completed, we set authenticated to true
                 setAuthenticated(true);
