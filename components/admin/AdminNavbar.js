@@ -1,3 +1,5 @@
+import Link from "next/link";
+import Image from "next/image";
 import { useCookies } from "react-cookie";
 import axios from "axios";
 
@@ -78,11 +80,35 @@ export default function AdminNavbarComponent() {
     <>
       <div className="md:flex md:items-center md:justify-between">
         <div className="min-w-0 flex-1">
-          <h2 className="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-            Kreative ID Admin Dashboard
-          </h2>
+          <Link href="/admin/apps">
+            <Image
+              className="h-8 w-auto sm:h-12"
+              src="/kreative-id.png"
+              alt={"Kreative ID Logo in Black and White"}
+              width={300}
+              height={100}
+            />
+          </Link>
         </div>
-        <div className="mt-4 flex md:mt-0 md:ml-4">
+        <div className="mt-4 flex md:mt-0 md:ml-4 space-x-8">
+          <Link
+            className="inline-block py-2 text-base font-medium text-black"
+            href="/admin/apps"
+          >
+            Apps
+          </Link>
+          <Link
+            className="inline-block py-2 text-base font-medium text-black"
+            href="/admin/accounts"
+          >
+            Accounts
+          </Link>
+          <Link
+            className="inline-block py-2 text-base font-medium text-black"
+            href="https://support.kreativeusa.com/id"
+          >
+            Get Support
+          </Link>
           <button
             type="button"
             className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
