@@ -30,7 +30,6 @@ export default function AppsTableComponent() {
         console.log(error);
         // window.location.href = "/admin/error";
       }
-
       // sends back array of applications from response object
       return response.data.data;
     },
@@ -83,9 +82,15 @@ export default function AppsTableComponent() {
                       </th>
                       <th
                         scope="col"
+                        className="px-3 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500"
+                      >
+                        Appchain
+                      </th>
+                      <th
+                        scope="col"
                         className="relative py-3 pl-3 pr-4 sm:pr-6"
                       >
-                        <span className="sr-only">Edit</span>
+                        <span className="sr-only">Edit and View</span>
                       </th>
                     </tr>
                   </thead>
@@ -96,6 +101,7 @@ export default function AppsTableComponent() {
                         aidn={app.aidn}
                         name={app.name}
                         callback={app.callbackUrl}
+                        appchain={app.appchain}
                       />
                     ))}
                   </tbody>
