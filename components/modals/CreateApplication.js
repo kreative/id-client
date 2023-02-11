@@ -55,7 +55,6 @@ export default function CreateApplicationModal({ state, setState }) {
       setAlertStyles("");
     },
     onSuccess: () => {
-      console.log("onSuccess started...");
       // close the modal since the method completely succeeded
       setState(false);
 
@@ -89,10 +88,6 @@ export default function CreateApplicationModal({ state, setState }) {
     // calls the mutation to create a new application
     appsMutation.mutate(newCallback);
   };
-
-  if (appsMutation.isLoading) console.log("mutation loading...");
-  if (appsMutation.isError) console.log("mutation error...");
-  if (appsMutation.isSuccess) console.log("mutation success...");
 
   return (
     <Transition.Root show={state} as={Fragment}>

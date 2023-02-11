@@ -21,6 +21,7 @@ export default function EditApplicationModal({ state, setState }) {
   // temporary states, initialized to be empty
   const [appName, setAppName] = useState("");
   const [callback, setCallback] = useState("");
+  const [refresh, setRefresh] = useState(false);
 
   // sets the local states based on appData global state
   // there is some sort of async issue where setting the default value of the temp states
@@ -37,6 +38,13 @@ export default function EditApplicationModal({ state, setState }) {
     setAlertStyles("hidden");
   };
 
+  // handles changes to the checkbox
+  const handleCheckboxChange = (e) => {
+    const checked = e.target.checked;
+    console.log(checked);
+    setRefresh(checked);
+  };
+
   // updates the application details
   const editAppMutation = useMutation({
     mutationFn: async (url) => {
@@ -48,6 +56,7 @@ export default function EditApplicationModal({ state, setState }) {
           {
             callbackUrl: callback,
             name: appName,
+            refreshAppchain: refresh,
           },
           {
             headers: {
@@ -186,15 +195,15 @@ export default function EditApplicationModal({ state, setState }) {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                 <div>
-                  <div className="mt-6 pb-3 text-center">
+                  <div className="mt-6 pb-3">
                     <Dialog.Title
                       as="h3"
-                      className="text-2xl font-bold leading-6 text-gray-900"
+                      className="text-center text-2xl font-bold leading-6 text-gray-900"
                     >
                       Edit {appData.name} ({appData.aidn})
                     </Dialog.Title>
                     <div className="mt-2">
-                      <p className="text-sm text-gray-500">
+                      <p className="text-center text-sm text-gray-500">
                         Modify the callback URL or application name.
                       </p>
                     </div>
@@ -242,6 +251,32 @@ export default function EditApplicationModal({ state, setState }) {
                           />
                         </div>
                       </div>
+                      <div className="relative flex items-start py-4">
+                        <div className="min-w-0 flex-1 text-sm">
+                          <label
+                            htmlFor="comments"
+                            className="font-medium text-gray-700"
+                          >
+                            Generate a new appchain?
+                          </label>
+                          <p
+                            id="comments-description"
+                            className="text-gray-500"
+                          >
+                            Current appchain: {appData.appchain}
+                          </p>
+                        </div>
+                        <div className="ml-3 flex h-5 items-center">
+                          <input
+                            id="comments"
+                            aria-describedby="comments-description"
+                            name="comments"
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                            onChange={handleCheckboxChange}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -264,7 +299,7 @@ export default function EditApplicationModal({ state, setState }) {
                 </div>
                 <div className="flex items-center justify-center">
                   <span className="pt-4">
-                    <button 
+                    <button
                       className="text-md inline-flex items-center justify-center font-medium text-red-600 shadow-sm hover:text-red-400 sm:w-auto"
                       onClick={(e) => deleteApplication(e)}
                     >
