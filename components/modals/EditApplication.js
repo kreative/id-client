@@ -314,14 +314,11 @@ export default function EditApplicationModal({ state, setState }) {
                           Callback URL
                         </label>
                         <div className="mt-1 flex rounded-md shadow-sm">
-                          <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
-                            https://
-                          </span>
                           <input
                             type="text"
                             name="callback-url"
                             id="callback-url"
-                            className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="block w-full min-w-0 flex-1 rounded-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             placeholder="kreativeusa.com"
                             required
                             value={callback}
