@@ -36,6 +36,7 @@ export default function CreateApplicationModal({ state, setState }) {
             headers: {
               KREATIVE_ID_KEY: cookies["kreative_id_key"],
               KREATIVE_AIDN: process.env.NEXT_PUBLIC_AIDN,
+              KREATIVE_APPCHAIN: process.env.NEXT_PUBLIC_APPCHAIN,
             },
           }
         );

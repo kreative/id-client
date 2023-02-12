@@ -4,6 +4,8 @@ import { useCookies } from "react-cookie";
 
 // the identifier for kreative id, either test or prod version
 const AIDN = process.env.NEXT_PUBLIC_AIDN;
+// the secret appchain for kreative id, production
+const APPCHAIN = process.env.NEXT_PUBLIC_APPCHAIN;
 
 // this component will serve as custom "middleware" to authenticate certain pages
 // essentially, it will take all page components as children
@@ -34,12 +36,13 @@ export default function AuthenticateComponent({ children, permissions }) {
       } else {
         // gets the key from cookie and parses it as a string for the POST request
         const keyFromCookie = cookies["kreative_id_key"];
-        
+
         // runs a verify keychain request on the API
         axios
           .post("https://id-api.kreativeusa.com/v1/keychains/verify", {
             key: keyFromCookie,
             aidn: parseInt(AIDN),
+            appchain: APPCHAIN,
           })
           .then((response) => {
             // successful response from the server, should be code 200 (maybe 201)
@@ -62,12 +65,30 @@ export default function AuthenticateComponent({ children, permissions }) {
                 window.location.href = "/error?cause=permissions";
               } else {
                 // since we can't add headers, since we are executing this on the client side, we will just setup new cookies
-                setCookie('keychain_id', keychain.id, { secure: true, sameSite: 'strict' });
-                setCookie('id_ksn', account.ksn, { secure: true, sameSite: 'strict' });
-                setCookie('id_email', account.email, { secure: true, sameSite: 'strict' });
-                setCookie('id_fname', account.firstName, { secure: true, sameSite: 'strict' });
-                setCookie('id_lname', account.lastName, { secure: true, sameSite: 'strict' });
-                setCookie('id_picture', account.profilePicture, { secure: true, sameSite: 'strict' });
+                setCookie("keychain_id", keychain.id, {
+                  secure: true,
+                  sameSite: "strict",
+                });
+                setCookie("id_ksn", account.ksn, {
+                  secure: true,
+                  sameSite: "strict",
+                });
+                setCookie("id_email", account.email, {
+                  secure: true,
+                  sameSite: "strict",
+                });
+                setCookie("id_fname", account.firstName, {
+                  secure: true,
+                  sameSite: "strict",
+                });
+                setCookie("id_lname", account.lastName, {
+                  secure: true,
+                  sameSite: "strict",
+                });
+                setCookie("id_picture", account.profilePicture, {
+                  secure: true,
+                  sameSite: "strict",
+                });
 
                 // once all operations are completed, we set authenticated to true
                 setAuthenticated(true);
@@ -75,6 +96,7 @@ export default function AuthenticateComponent({ children, permissions }) {
             }
           })
           .catch((error) => {
+            console.log(error);
             // the HTTPS status code is not between 200-299
             // verification of the key has failed for some reason
             // possible reasons include: expired keychain, aidn mismatch, internal server error, not found (rare)

@@ -21,7 +21,11 @@ export default function AdminNavbarComponent() {
     // closes the keychain using id-api
     axios
       .post(
-        `https://id-api.kreativeusa.com/v1/keychains/${cookies["keychain_id"]}/close`
+        `https://id-api.kreativeusa.com/v1/keychains/${cookies["keychain_id"]}/close`,
+        {
+          aidn: process.env.NEXT_PUBLIC_AIDN,
+          appchain: process.env.NEXT_PUBLIC_APPCHAIN,
+        }
       )
       .then((response) => {
         // response status code is between 200-299
@@ -90,7 +94,7 @@ export default function AdminNavbarComponent() {
             />
           </Link>
         </div>
-        <div className="mt-4 flex md:mt-0 md:ml-4 space-x-8">
+        <div className="mt-4 flex space-x-8 md:mt-0 md:ml-4">
           <Link
             className="inline-block py-2 text-base font-medium text-black"
             href="/admin/apps"
