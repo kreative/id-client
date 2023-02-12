@@ -5,6 +5,10 @@ const appDataStore = atom({
   name: "",
   callback: "",
   appchain: "",
+  homepage: "",
+  description: "",
+  logoUrl: "",
+  iconUrl: "",
 });
 
 export { appDataStore };

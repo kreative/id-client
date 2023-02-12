@@ -103,6 +103,10 @@ export default function AppsTableComponent() {
                         name={app.name}
                         callback={app.callbackUrl}
                         appchain={app.appchain}
+                        homepage={app.homepage}
+                        description={app.description}
+                        logoUrl={app.logoUrl}
+                        iconUrl={app.iconUrl}
                       />
                     ))}
                   </tbody>

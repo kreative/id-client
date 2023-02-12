@@ -21,6 +21,10 @@ export default function EditApplicationModal({ state, setState }) {
   // temporary states, initialized to be empty
   const [appName, setAppName] = useState("");
   const [callback, setCallback] = useState("");
+  const [homepage, setHomepage] = useState("");
+  const [description, setDescription] = useState("");
+  const [logoUrl, setLogo] = useState("");
+  const [iconUrl, setIcon] = useState("");
   const [refresh, setRefresh] = useState(false);
 
   // sets the local states based on appData global state
@@ -28,9 +32,14 @@ export default function EditApplicationModal({ state, setState }) {
   // to the appData variables results in undefined default values, so we do it here
   // also going to hide any alert messages
   useEffect(() => {
+    console.log(appData);
     setAlertStyles("hidden");
     setAppName(appData.name);
     setCallback(appData.callback);
+    setHomepage(appData.homepage);
+    setDescription(appData.description);
+    setLogo(appData.logoUrl);
+    setIcon(appData.iconUrl);
   }, [appData]);
 
   const setOpen = (isOpen) => {
@@ -57,6 +66,10 @@ export default function EditApplicationModal({ state, setState }) {
             callbackUrl: callback,
             name: appName,
             refreshAppchain: refresh,
+            homepage, 
+            description,
+            logoUrl,
+            iconUrl,
           },
           {
             headers: {
@@ -97,15 +110,47 @@ export default function EditApplicationModal({ state, setState }) {
     // hide any alert messages
     setAlertStyles("hidden");
 
-    // makes sure both fields actually have values
-    if (appName === "" || callback === "") {
+    // makes sure all fields actually have values
+    // logo and icon are allowed to be "" since they are optional
+    if (
+      appName === "" ||
+      callback === "" ||
+      homepage === "" ||
+      description === ""
+    ) {
       setMessage("Please fill out all fields.");
       setAlertStyles("");
       return;
     }
 
-    // checks to see if both fields are the same as the global state
-    if (appName === appData.name && callback === appData.callback) {
+    // check if the logo URL starts with https://
+    // we need this to be a valid URL if there is actually something entered
+    if (logoUrl !== "" && !logoUrl.startsWith("https://")) {
+      setMessage("Logo URL must start with https://");
+      setAlertStyles("");
+      return;
+    }
+
+    // check if the icon URL starts with https://
+    // we need this to be a valid URL if there is actually something entered
+    if (iconUrl !== "" && !iconUrl.startsWith("https://")) {
+      setMessage("Icon URL must start with https://");
+      setAlertStyles("");
+      return;
+    }
+
+    // checks to see if the fields are the same as the global state
+    // if they are we show an alert message and return
+    // we don't want to run a query to post the same data, that's a waste of resources
+    if (
+      appName === appData.name &&
+      callback === appData.callback &&
+      homepage === appData.homepage &&
+      description === appData.description &&
+      logoUrl === appData.logoUrl &&
+      iconUrl === appData.iconUrl &&
+      refresh === false
+    ) {
       setMessage("No changes were made.");
       setAlertStyles("");
       return;
@@ -213,44 +258,141 @@ export default function EditApplicationModal({ state, setState }) {
                       <AlertComponent message={message} />
                     </div>
                     <div id="new-application-form">
-                      <div className="pb-3 pt-6">
-                        <label
-                          htmlFor="email"
-                          className="block text-left text-sm font-medium text-gray-700"
-                        >
-                          Application Name
-                        </label>
-                        <div className="mt-1">
-                          <input
-                            type="text"
-                            name="appName"
-                            id="appName"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="Kreative DreamFactory"
-                            required
-                            value={appName}
-                            onChange={(e) => setAppName(e.target.value)}
-                          />
+                      <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div className="sm:col-span-3">
+                          <div className="pb-2 pt-6">
+                            <label
+                              htmlFor="appName"
+                              className="block text-left text-sm font-medium text-gray-700"
+                            >
+                              Application Name
+                            </label>
+                            <div className="mt-1">
+                              <input
+                                type="text"
+                                name="appName"
+                                id="appName"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                placeholder="Kreative DreamFactory"
+                                required
+                                value={appName}
+                                onChange={(e) => setAppName(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="sm:col-span-3">
+                          <div className="sm:col-span-3">
+                            <div className="pb-2 pt-6">
+                              <label
+                                htmlFor="homepage"
+                                className="block text-left text-sm font-medium text-gray-700"
+                              >
+                                Homepage
+                              </label>
+                              <div className="mt-1">
+                                <input
+                                  type="text"
+                                  name="homepage"
+                                  id="homepage"
+                                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  placeholder="https://kreativeusa.com"
+                                  required
+                                  value={homepage}
+                                  onChange={(e) => setHomepage(e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className="pt-3">
+                      <div className="pt-2 pb-2">
                         <label
-                          htmlFor="company-website"
+                          htmlFor="callback-url"
                           className="block text-left text-sm font-medium text-gray-700"
                         >
                           Callback URL
                         </label>
                         <div className="mt-1 flex rounded-md shadow-sm">
+                          <span className="inline-flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-50 px-3 text-gray-500 sm:text-sm">
+                            https://
+                          </span>
                           <input
                             type="text"
                             name="callback-url"
                             id="callback-url"
-                            className="block w-full min-w-0 flex-1 rounded-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="block w-full min-w-0 flex-1 rounded-none rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             placeholder="kreativeusa.com"
                             required
                             value={callback}
                             onChange={(e) => setCallback(e.target.value)}
                           />
+                        </div>
+                      </div>
+                      <div className="pt-2 pb-2">
+                        <label
+                          htmlFor="description"
+                          className="block text-left text-sm font-medium text-gray-700"
+                        >
+                          Description
+                        </label>
+                        <textarea
+                          id="description"
+                          name="description"
+                          rows={3}
+                          className="mt-1 block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          placeholder={"End to end asteroid mining service..."}
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div className="sm:col-span-3">
+                          <div className="pb-2">
+                            <label
+                              htmlFor="logo"
+                              className="block text-left text-sm font-medium text-gray-700"
+                            >
+                              Logo URL
+                            </label>
+                            <div className="mt-1">
+                              <input
+                                type="text"
+                                name="logo"
+                                id="logo"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                placeholder="https://cdn.kreativeusa.com/icon.png"
+                                required
+                                value={logoUrl}
+                                onChange={(e) => setLogo(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="sm:col-span-3">
+                          <div className="sm:col-span-3">
+                            <div className="pb-2">
+                              <label
+                                htmlFor="icon"
+                                className="block text-left text-sm font-medium text-gray-700"
+                              >
+                                Icon URL
+                              </label>
+                              <div className="mt-1">
+                                <input
+                                  type="text"
+                                  name="icon"
+                                  id="icon"
+                                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  placeholder="https://cdn.kreativeusa.com/icon.png"
+                                  required
+                                  value={iconUrl}
+                                  onChange={(e) => setIcon(e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className="relative flex items-start py-4">

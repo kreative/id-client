@@ -9,17 +9,24 @@ import AlertComponent from "../Alert";
 export default function CreateApplicationModal({ state, setState }) {
   const cancelButtonRef = useRef(null);
   const queryClient = useQueryClient();
-
   const [cookies] = useCookies(["kreative_id_key"]);
+
+  // state variables for creating a new application in the modal
   const [appName, setAppName] = useState("");
   const [callback, setCallback] = useState("");
+  const [homepage, setHomepage] = useState("");
+  const [description, setDescription] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [iconUrl, setIconUrl] = useState("");
+
+  // alert message styles
   const [alertStyles, setAlertStyles] = useState("hidden");
   const [message, setMessage] = useState("");
 
   const setOpen = (isOpen) => {
     setState(isOpen);
     setAlertStyles("hidden");
-  }
+  };
 
   const appsMutation = useMutation({
     mutationFn: async (callback) => {
@@ -31,6 +38,10 @@ export default function CreateApplicationModal({ state, setState }) {
           {
             callbackUrl: callback,
             name: appName,
+            description,
+            homepage,
+            logoUrl,
+            iconUrl,
           },
           {
             headers: {
@@ -52,7 +63,9 @@ export default function CreateApplicationModal({ state, setState }) {
       // some sort of error occured
       // handle any errors produced from the request
       console.log(error);
-      setMessage(`Internal server error occured. Please try again later. ERROR: ${error.message}`)
+      setMessage(
+        `Internal server error occured. Please try again later. ERROR: ${error.message}`
+      );
       setAlertStyles("");
     },
     onSuccess: () => {
@@ -62,6 +75,10 @@ export default function CreateApplicationModal({ state, setState }) {
       // clear out the values from the state
       setCallback("");
       setAppName("");
+      setDescription("");
+      setHomepage("");
+      setLogoUrl("");
+      setIconUrl("");
 
       // we tell queryClient that the cached data we currently have is invalid
       // this will force a refetch that contains the newly created application
@@ -76,12 +93,29 @@ export default function CreateApplicationModal({ state, setState }) {
     // hides any alert messages that may be showing
     setAlertStyles("hidden");
 
-    // make sure both fields are filled out, if not show alert and break thread
-    if (appName === "" || callback === "") {
+    // make sure all required fields are filled out, if not show alert and break thread
+    // logoUrl and iconUrl are not required so they will not be checked
+    if (appName === "" || callback === "" || homepage === "" || description === "") {
       setMessage("Please fill out all fields");
       setAlertStyles("");
       return;
     }
+
+    // check if the logo URL starts with https://
+    // we need this to be a valid URL if there is actually something entered
+    if (logoUrl !== "" && !logoUrl.startsWith("https://")) {
+      setMessage("Logo URL must start with https://");
+      setAlertStyles("");
+      return;
+    };
+
+    // check if the icon URL starts with https://
+    // we need this to be a valid URL if there is actually something entered
+    if (iconUrl !== "" && !iconUrl.startsWith("https://")) {
+      setMessage("Icon URL must start with https://");
+      setAlertStyles("");
+      return;
+    };
 
     // add 'https://' to the callback string that was entered
     const newCallback = `https://${callback}`;
@@ -133,38 +167,66 @@ export default function CreateApplicationModal({ state, setState }) {
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
                         Submit a name for the application and a valid callback
-                        URL for Kreative ID to redirect to. After that, you&apos;ll
-                        recieve your new application&apos;s AIDN that you can start
-                        using in your application.
+                        URL for Kreative ID to redirect to. After that,
+                        you&apos;ll recieve your new application&apos;s AIDN
+                        that you can start using in your application.
                       </p>
                     </div>
                     <div className={alertStyles}>
                       <AlertComponent message={message} />
                     </div>
                     <div id="new-application-form">
-                      <div className="pb-3 pt-6">
-                        <label
-                          htmlFor="email"
-                          className="block text-left text-sm font-medium text-gray-700"
-                        >
-                          Application Name
-                        </label>
-                        <div className="mt-1">
-                          <input
-                            type="text"
-                            name="appName"
-                            id="appName"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="Kreative DreamFactory"
-                            required
-                            value={appName}
-                            onChange={(e) => setAppName(e.target.value)}
-                          />
+                      <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div className="sm:col-span-3">
+                          <div className="pb-2 pt-6">
+                            <label
+                              htmlFor="appName"
+                              className="block text-left text-sm font-medium text-gray-700"
+                            >
+                              Application Name
+                            </label>
+                            <div className="mt-1">
+                              <input
+                                type="text"
+                                name="appName"
+                                id="appName"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                placeholder="Kreative DreamFactory"
+                                required
+                                value={appName}
+                                onChange={(e) => setAppName(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="sm:col-span-3">
+                          <div className="sm:col-span-3">
+                            <div className="pb-2 pt-6">
+                              <label
+                                htmlFor="homepage"
+                                className="block text-left text-sm font-medium text-gray-700"
+                              >
+                                Homepage
+                              </label>
+                              <div className="mt-1">
+                                <input
+                                  type="text"
+                                  name="homepage"
+                                  id="homepage"
+                                  className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                  placeholder="https://kreativeusa.com"
+                                  required
+                                  value={homepage}
+                                  onChange={(e) => setHomepage(e.target.value)}
+                                />
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                      <div className="pt-3">
+                      <div className="pt-2 pb-2">
                         <label
-                          htmlFor="company-website"
+                          htmlFor="callback-url"
                           className="block text-left text-sm font-medium text-gray-700"
                         >
                           Callback URL
@@ -185,13 +247,78 @@ export default function CreateApplicationModal({ state, setState }) {
                           />
                         </div>
                       </div>
+                      <div className="pt-2 pb-2">
+                        <label
+                          htmlFor="description"
+                          className="block text-left text-sm font-medium text-gray-700"
+                        >
+                          Description
+                        </label>
+                        <textarea
+                          id="description"
+                          name="description"
+                          rows={3}
+                          className="mt-1 block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          placeholder={"End to end asteroid mining service..."}
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                  <div className="sm:col-span-3">
+                    <div className="pb-2">
+                      <label
+                        htmlFor="logo"
+                        className="block text-left text-sm font-medium text-gray-700"
+                      >
+                        Logo URL
+                      </label>
+                      <div className="mt-1">
+                        <input
+                          type="text"
+                          name="logo"
+                          id="logo"
+                          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                          placeholder="https://cdn.kreativeusa.com/icon.png"
+                          required
+                          value={logoUrl}
+                          onChange={(e) => setLogoUrl(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="sm:col-span-3">
+                    <div className="sm:col-span-3">
+                      <div className="pb-2">
+                        <label
+                          htmlFor="icon"
+                          className="block text-left text-sm font-medium text-gray-700"
+                        >
+                          Icon URL
+                        </label>
+                        <div className="mt-1">
+                          <input
+                            type="text"
+                            name="icon"
+                            id="icon"
+                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            placeholder="https://cdn.kreativeusa.com/icon.png"
+                            required
+                            value={iconUrl}
+                            onChange={(e) => setIconUrl(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-3 sm:gap-3">
                   <button
                     type="button"
-                    className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 sm:col-start-2 sm:text-sm"
+                    className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 sm:col-start-2 sm:col-span-2 sm:text-sm"
                     onClick={(e) => createApplication(e)}
                   >
                     Create application
