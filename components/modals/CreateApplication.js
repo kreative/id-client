@@ -95,7 +95,12 @@ export default function CreateApplicationModal({ state, setState }) {
 
     // make sure all required fields are filled out, if not show alert and break thread
     // logoUrl and iconUrl are not required so they will not be checked
-    if (appName === "" || callback === "" || homepage === "" || description === "") {
+    if (
+      appName === "" ||
+      callback === "" ||
+      homepage === "" ||
+      description === ""
+    ) {
       setMessage("Please fill out all fields");
       setAlertStyles("");
       return;
@@ -107,7 +112,7 @@ export default function CreateApplicationModal({ state, setState }) {
       setMessage("Logo URL must start with https://");
       setAlertStyles("");
       return;
-    };
+    }
 
     // check if the icon URL starts with https://
     // we need this to be a valid URL if there is actually something entered
@@ -115,7 +120,7 @@ export default function CreateApplicationModal({ state, setState }) {
       setMessage("Icon URL must start with https://");
       setAlertStyles("");
       return;
-    };
+    }
 
     // add 'https://' to the callback string that was entered
     const newCallback = `https://${callback}`;

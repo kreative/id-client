@@ -64,7 +64,7 @@ export default function EditApplicationModal({ state, setState }) {
             callbackUrl: callback,
             name: appName,
             refreshAppchain: refresh,
-            homepage, 
+            homepage,
             description,
             logoUrl,
             iconUrl,
