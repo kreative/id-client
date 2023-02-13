@@ -24,7 +24,7 @@ function SigninFunction({ appData }) {
   const [goBackStyles, setGoBackStyles] = useState("hidden");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertStyles, setAlertStyles] = useState("hidden");
-  
+
   // regex expression for checking if a string is a valid email address
   const regexExp =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;

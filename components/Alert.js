@@ -1,4 +1,4 @@
-import { XCircleIcon } from '@heroicons/react/20/solid'
+import { XCircleIcon } from "@heroicons/react/20/solid";
 
 export default function AlertComponent({ message }) {
   return (
@@ -8,9 +8,9 @@ export default function AlertComponent({ message }) {
           <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
         </div>
         <div className="ml-3">
-          <p className="text-sm text-red-800">{ message }</p>
+          <p className="text-sm text-red-800">{message}</p>
         </div>
       </div>
     </div>
-  )
+  );
 }

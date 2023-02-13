@@ -19,7 +19,7 @@ export default function CreateApplicationModal({ state, setState }) {
   const setOpen = (isOpen) => {
     setState(isOpen);
     setAlertStyles("hidden");
-  }
+  };
 
   const appsMutation = useMutation({
     mutationFn: async (callback) => {
@@ -52,7 +52,9 @@ export default function CreateApplicationModal({ state, setState }) {
       // some sort of error occured
       // handle any errors produced from the request
       console.log(error);
-      setMessage(`Internal server error occured. Please try again later. ERROR: ${error.message}`)
+      setMessage(
+        `Internal server error occured. Please try again later. ERROR: ${error.message}`
+      );
       setAlertStyles("");
     },
     onSuccess: () => {
@@ -133,9 +135,9 @@ export default function CreateApplicationModal({ state, setState }) {
                     <div className="mt-2">
                       <p className="text-sm text-gray-500">
                         Submit a name for the application and a valid callback
-                        URL for Kreative ID to redirect to. After that, you&apos;ll
-                        recieve your new application&apos;s AIDN that you can start
-                        using in your application.
+                        URL for Kreative ID to redirect to. After that,
+                        you&apos;ll recieve your new application&apos;s AIDN
+                        that you can start using in your application.
                       </p>
                     </div>
                     <div className={alertStyles}>
