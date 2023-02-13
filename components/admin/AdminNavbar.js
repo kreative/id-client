@@ -18,7 +18,7 @@ export default function AdminNavbarComponent() {
     // prevents default button click behavior
     e.preventDefault();
 
-    console.log("hello")
+    console.log("hello");
     console.log(process.env.NEXT_PUBLIC_AIDN);
 
     // closes the keychain using id-api
