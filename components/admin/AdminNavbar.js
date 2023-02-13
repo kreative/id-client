@@ -18,12 +18,15 @@ export default function AdminNavbarComponent() {
     // prevents default button click behavior
     e.preventDefault();
 
+    console.log("hello")
+    console.log(process.env.NEXT_PUBLIC_AIDN);
+
     // closes the keychain using id-api
     axios
       .post(
         `https://id-api.kreativeusa.com/v1/keychains/${cookies["keychain_id"]}/close`,
         {
-          aidn: process.env.NEXT_PUBLIC_AIDN,
+          aidn: parseInt(process.env.NEXT_PUBLIC_AIDN),
           appchain: process.env.NEXT_PUBLIC_APPCHAIN,
         }
       )
@@ -54,7 +57,7 @@ export default function AdminNavbarComponent() {
         // that isn't actually sent by the server api, but rather from axios
         let statusCode;
 
-        if (error.response.data.data.statusCode === undefined) {
+        if (error.response.data.statusCode === undefined) {
           statusCode = error.response.data.data.statusCode;
 
           // for all of these errors we want to redirect the user to the error page with a cause
