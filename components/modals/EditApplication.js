@@ -32,7 +32,6 @@ export default function EditApplicationModal({ state, setState }) {
   // to the appData variables results in undefined default values, so we do it here
   // also going to hide any alert messages
   useEffect(() => {
-    console.log(appData);
     setAlertStyles("hidden");
     setAppName(appData.name);
     setCallback(appData.callback);
@@ -50,7 +49,6 @@ export default function EditApplicationModal({ state, setState }) {
   // handles changes to the checkbox
   const handleCheckboxChange = (e) => {
     const checked = e.target.checked;
-    console.log(checked);
     setRefresh(checked);
   };
 
@@ -81,7 +79,6 @@ export default function EditApplicationModal({ state, setState }) {
         );
       } catch (error) {
         // some sort of error happened
-        console.log(error);
         throw new Error(error.message);
       }
 
@@ -90,7 +87,6 @@ export default function EditApplicationModal({ state, setState }) {
     onError: (error) => {
       // some sort of error occured
       // handle any errors produced from the request
-      console.log(error);
       setMessage(
         `Internal server error occured. Please try again later. ERROR: ${error.message}`
       );
@@ -177,7 +173,6 @@ export default function EditApplicationModal({ state, setState }) {
         });
       } catch (error) {
         // some sort of error happened
-        console.log(error);
         throw new Error(error.message);
       }
 
@@ -186,7 +181,6 @@ export default function EditApplicationModal({ state, setState }) {
     onError: (error) => {
       // some sort of error occured
       // handle any errors produced from the request
-      console.log(error);
       setMessage(
         `Internal server error occured. Please try again later. ERROR: ${error.message}`
       );
