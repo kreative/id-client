@@ -1,4 +1,10 @@
 export default function AppStats({ stats }) {
+  stats.map((stat) => {
+    const name = stat.name;
+    const words = name.split(' ');
+    stat.keyword = words[words.length - 1];
+  });
+
   return (
     <div>
       <h3 className="text-lg font-medium leading-6 text-gray-900">Application Analytics</h3>
@@ -6,7 +12,10 @@ export default function AppStats({ stats }) {
         {stats.map((item) => (
           <div key={item.name} className="overflow-hidden rounded-lg bg-white px-4 py-5 border-2 border-gray-100 sm:p-6">
             <dt className="truncate text-sm font-medium text-gray-500">{item.name}</dt>
-            <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">{item.stat}</dd>
+            <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
+              {item.value}{" "}
+              <span className="font-normal text-lg">{item.keyword}</span>
+            </dd>
           </div>
         ))}
       </dl>

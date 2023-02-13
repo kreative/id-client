@@ -23,12 +23,6 @@ export default function SingleApp({ aidn }) {
   // this is mock data, should be replaced with real data
   // we will eventually send this exact array in the getOneApplication query
   // through response.data.data.stats
-  const stats = [
-    { name: "Total Subscribers", stat: "71,897" },
-    { name: "Avg. Open Rate", stat: "58.16%" },
-    { name: "Avg. Click Rate", stat: "24.57%" },
-    { name: "Total Apps", stat: "4" },
-  ];
 
   const changeEditState = (event) => {
     event.preventDefault();
@@ -64,7 +58,13 @@ export default function SingleApp({ aidn }) {
         // this request doesn't require any authentication
         // so no headers or any sort of body data will be sent with this get request
         response = await axios.get(
-          `https://id-api.kreativeusa.com/v1/applications/${aidn}`
+          `https://id-api.kreativeusa.com/v1/applications/${aidn}?verbose=true`,
+          {
+            headers: {
+              KREATIVE_AIDN: process.env.NEXT_PUBLIC_AIDN,
+              KREATIVE_APPCHAIN: process.env.NEXT_PUBLIC_APPCHAIN,
+            },
+          }
         );
       } catch (error) {
         // some sort of error, statusCode is not between 200-299
@@ -87,8 +87,9 @@ export default function SingleApp({ aidn }) {
         iconUrl: application.iconUrl,
       });
 
-      // sends back the application data object
-      return application;
+      // sends back the data from the response object
+      // the data includes the application object and the stats array
+      return response.data.data;
     },
   });
 
@@ -123,7 +124,7 @@ export default function SingleApp({ aidn }) {
             </div>
           </div>
           <Breadcrumb pages={pages} />
-          <AppStats stats={stats} />
+          <AppStats stats={applicationQuery.data.stats} />
           <div className="mt-6 pb-24">
             <div className="overflow-hidden border-2 border-gray-100 bg-white sm:rounded-lg">
               <div className="px-4 py-5 sm:px-6">
@@ -200,7 +201,7 @@ export default function SingleApp({ aidn }) {
                           <div className="ml-4 flex-shrink-0">
                             <a
                               href={appData.logoUrl}
-                              className="font-medium text-indigo-600 hover:text-indigo-500 mr-3"
+                              className="mr-3 font-medium text-indigo-600 hover:text-indigo-500"
                               target={"_blank"}
                               rel={"noreferrer"}
                             >
@@ -208,7 +209,9 @@ export default function SingleApp({ aidn }) {
                             </a>
                             <button
                               className="font-medium text-indigo-600 hover:text-indigo-500"
-                              onClick={(e) => copyLinkToClipboard(e, appData.iconUrl)}
+                              onClick={(e) =>
+                                copyLinkToClipboard(e, appData.iconUrl)
+                              }
                             >
                               Copy link
                             </button>
@@ -235,7 +238,9 @@ export default function SingleApp({ aidn }) {
                             </a>
                             <button
                               className="font-medium text-indigo-600 hover:text-indigo-500"
-                              onClick={(e) => copyLinkToClipboard(e, appData.iconUrl)}
+                              onClick={(e) =>
+                                copyLinkToClipboard(e, appData.iconUrl)
+                              }
                             >
                               Copy link
                             </button>
