@@ -27,9 +27,9 @@ export default function AppsTableComponent() {
           }
         );
       } catch (error) {
-        // some sort of error, statusCode is not between 200-199
+        // some sort of error, statusCode is not between 200-299
         console.log(error);
-        // window.location.href = "/admin/error";
+        throw new Error("Something went wrong with the server.");
       }
       // sends back array of applications from response object
       return response.data.data;
@@ -103,6 +103,10 @@ export default function AppsTableComponent() {
                         name={app.name}
                         callback={app.callbackUrl}
                         appchain={app.appchain}
+                        homepage={app.homepage}
+                        description={app.description}
+                        logoUrl={app.logoUrl}
+                        iconUrl={app.iconUrl}
                       />
                     ))}
                   </tbody>

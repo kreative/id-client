@@ -107,12 +107,14 @@ export default function AdminNavbarComponent() {
           >
             Accounts
           </Link>
-          <Link
+          <a
             className="inline-block py-2 text-base font-medium text-black"
             href="https://support.kreativeusa.com/id"
+            target={"_blank"}
+            rel={"noreferrer"}
           >
             Get Support
-          </Link>
+          </a>
           <button
             type="button"
             className="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
