@@ -188,7 +188,7 @@ function SignupFunction({ appData }) {
             <div>
               <Image
                 className="h-8 w-auto"
-                src="/kreative-id.png"
+                src="https://cdn.kreativeusa.com/id/kreative-id.png"
                 alt="Kreative ID logo in color"
                 height={1000}
                 width={100}
