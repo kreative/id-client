@@ -90,7 +90,7 @@ export default function AdminNavbarComponent() {
           <Link href="/admin/apps">
             <Image
               className="h-8 w-auto sm:h-12"
-              src="/kreative-id.png"
+              src="https://cdn.kreativeusa.com/id/kreative-id.png"
               alt={"Kreative ID Logo in Black and White"}
               width={300}
               height={100}

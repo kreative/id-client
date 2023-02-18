@@ -20,7 +20,7 @@ export default function NotFoundPage() {
               <span className="sr-only">Kreative ID</span>
               <img
                 className="h-10 w-auto"
-                src="/kreative-id.png"
+                src="https://cdn.kreativeusa.com/id/kreative-id.png"
                 alt=""
               />
             </Link>

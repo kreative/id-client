@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function ErrorComponent({ cause }) {
@@ -46,7 +47,11 @@ export default function ErrorComponent({ cause }) {
           <div className="flex flex-shrink-0 justify-center">
             <Link href="/" className="inline-flex">
               <span className="sr-only">Kreative ID</span>
-              <img className="h-12 w-auto" src="/kreative-id.png" alt="" />
+              <Image
+                className="h-12 w-auto"
+                src="https://cdn.kreativeusa.com/id/kreative-id.png"
+                alt="Kreative ID logo in black and white"
+              />
             </Link>
           </div>
           <div className="py-16">
