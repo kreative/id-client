@@ -6,7 +6,7 @@ export default function WallpaperComponent() {
     <>
       <Image
         className="absolute inset-0 h-full w-full object-cover"
-        src="/space.jpg"
+        src="httsp://cdn.kreativeusa.com/id/space.jpg"
         alt="Space image Wallpaper for Kreative ID"
         fill="fill"
       />
