@@ -49,6 +49,8 @@ export default function ErrorComponent({ cause }) {
               <span className="sr-only">Kreative ID</span>
               <Image
                 className="h-12 w-auto"
+                width={400}
+                height={100}
                 src="https://cdn.kreativeusa.com/id/kreative-id.png"
                 alt="Kreative ID logo in black and white"
               />

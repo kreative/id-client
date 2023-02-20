@@ -6,6 +6,9 @@ import { useAtom } from "jotai";
 
 import { accountStore } from "@/stores/accountStore";
 
+const AIDN = process.env.NEXT_PUBLIC_AIDN;
+const APPCHAIN = process.env.NEXT_PUBLIC_APPCHAIN;
+
 export default function AdminNavbarComponent() {
   // gets the global account data store
   const [account, setAccount] = useAtom(accountStore);
@@ -19,22 +22,19 @@ export default function AdminNavbarComponent() {
     // prevents default button click behavior
     e.preventDefault();
 
-    console.log("hello");
-    console.log(process.env.NEXT_PUBLIC_AIDN);
-
     // closes the keychain using id-api
     axios
       .post(
         `https://id-api.kreativeusa.com/v1/keychains/${cookies["keychain_id"]}/close`,
         {
-          aidn: parseInt(process.env.NEXT_PUBLIC_AIDN),
-          appchain: process.env.NEXT_PUBLIC_APPCHAIN,
+          aidn: parseInt(AIDN),
+          appchain: APPCHAIN,
         }
       )
       .then((response) => {
         // deletes all cookies stored in local storage
-        removeCookie("kreative_id_key", { path: "/"});
-        removeCookie("keychain_id", { path: "/"});
+        removeCookie("kreative_id_key", { path: "/" });
+        removeCookie("keychain_id", { path: "/" });
 
         // resets the global account data store
         setAccount({});
@@ -58,22 +58,22 @@ export default function AdminNavbarComponent() {
           // for all of these errors we want to redirect the user to the error page with a cause
           if (statusCode === 403) {
             // bad request, probably the id was not passed or is not a number
-            window.location.href = "/error?cause=badrequest";
+            window.location.href = `/error?cause=badrequest&aidn=${AIDN}`;
           } else if (statusCode === 404) {
             // keychain not found using the id
-            window.location.href = "/error?cause=notfound";
+            window.location.href = `/error?cause=notfound&aidn=${AIDN}`;
           } else if (statusCode === 500) {
             // internal server error
-            window.location.href = "/error?cause=ise";
+            window.location.href = `/error?cause=ise&aidn=${AIDN}`;
           } else {
             // some weird unknown error
             // this should not happen at all, so if it does there are critical issues
-            window.location.href = "/error?cause=unknown";
+            window.location.href = `/error?cause=unknown&aidn=${AIDN}`;
           }
         } else {
           // if there is no error response status code then we have an "unknown error"
           // in most cases this is a connection error or some sort of axios error
-          window.location.href = "/error?cause=unknown";
+          window.location.href = `/error?cause=unknown&aidn=${AIDN}`;
         }
       });
   };
