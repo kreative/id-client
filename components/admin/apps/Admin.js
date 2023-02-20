@@ -7,6 +7,7 @@ import EditApplicationModal from "@/components/modals/EditApplication";
 import AdminNavbarComponent from "@/components/admin/AdminNavbar";
 
 import { editAppModalStore } from "@/stores/editAppModalStore";
+import { accountStore } from "@/stores/accountStore";
 
 export default function AdminComponent() {
   // state for create application modal
@@ -14,6 +15,7 @@ export default function AdminComponent() {
 
   // global state for edit application modal
   const [editState, setEditState] = useAtom(editAppModalStore);
+  const [account] = useAtom(accountStore);
 
   return (
     <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
@@ -24,7 +26,7 @@ export default function AdminComponent() {
         <div className="sm:flex sm:items-center">
           <div className="sm:flex-auto">
             <h1 className="text-xl font-semibold text-gray-900">
-              Applications
+              Applications for {account.firstName}
             </h1>
             <p className="mt-2 text-sm text-gray-700">
               A list of all applications including their AIDN, name, and
