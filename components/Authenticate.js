@@ -59,7 +59,7 @@ export default function AuthenticateComponent({ children, permissions }) {
                 // user does not have the correct permissions to continue
                 // we can't just say the user isn't authenticated, because they are, they just don't have the correct permissions
                 // FOR NOW we will handle the error by redirecting the user to the error page with a query param for the error
-                window.location.href = "/error?cause=permissions";
+                window.location.href = `/error?cause=permissions&aidn=${AIDN}`;
               } else {
                 // since we can't add headers, since we are executing this on the client side, we will just setup new cookies
                 setCookie("keychain_id", keychain.id, {
@@ -85,7 +85,7 @@ export default function AuthenticateComponent({ children, permissions }) {
               // internal server error
               // since there is something on the server side that isn't working reauthenticating wont work
               // instead we will redirect the user to an auth error page
-              window.location.href = "/error?cause=ise";
+              window.location.href = `/error?cause=ise&aidn=${AIDN}`;
             } else if (error.response.data.statusCode === 401) {
               // unauthorized exception, meaning that the keychain is expired
               // relocates to signin page with the callback for 'Kreative ID Test'
@@ -97,7 +97,7 @@ export default function AuthenticateComponent({ children, permissions }) {
               window.location.href = `/signin?aidn=${AIDN}`;
             } else {
               // some sort of unknown error, possibly on the client side itseld
-              window.location.href = "/error?cause=unknown";
+              window.location.href = `/error?cause=unknown&aidn=${AIDN}"`;
             }
           });
       }
