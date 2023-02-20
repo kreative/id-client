@@ -65,6 +65,7 @@ export default function AuthenticateComponent({ children, permissions }) {
                 setCookie("keychain_id", keychain.id, {
                   secure: true,
                   sameSite: "strict",
+                  path: "/",
                 });
 
                 // we set the account data in the global state so that the application can access it anywhere
