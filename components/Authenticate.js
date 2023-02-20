@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
+import { useAtom } from "jotai";
+
+import { accountStore } from "@/stores/accountStore";
 
 // the identifier for kreative id, either test or prod version
 const AIDN = process.env.NEXT_PUBLIC_AIDN;
@@ -15,27 +18,21 @@ export default function AuthenticateComponent({ children, permissions }) {
   // this sets default state to not authenticate so that the function won't render until useEffect has run
   const [authenticated, setAuthenticated] = useState(false);
   // the single cookie we need for this function, stores the key for the user
-  const [cookies, setCookie] = useCookies([
-    "kreative_id_key",
-    "keychain_id",
-    "id_ksn",
-    "id_email",
-    "id_fname",
-    "id_lname",
-    "id_picture",
-  ]);
+  const [cookies, setCookie] = useCookies(["kreative_id_key", "keychain_id"]);
+  // global state for the account data
+  const [account, setAccount] = useAtom(accountStore);
 
   // in every Kreative application, this sort of function has to take place before
   // the actual business logic occurs, as there needs to be an authenticated user
   React.useEffect(() => {
     const authenticate = () => {
       // gets cookies on the client side, if none are found, return false
-      if (cookies["kreative_id_key"] === undefined) {
+      if (cookies.kreative_id_key === undefined) {
         // takes the user to the sign in page since there is no key
         window.location.href = `/signin?aidn=${AIDN}`;
       } else {
         // gets the key from cookie and parses it as a string for the POST request
-        const keyFromCookie = cookies["kreative_id_key"];
+        const keyFromCookie = cookies.kreative_id_key;
 
         // runs a verify keychain request on the API
         axios
@@ -69,26 +66,9 @@ export default function AuthenticateComponent({ children, permissions }) {
                   secure: true,
                   sameSite: "strict",
                 });
-                setCookie("id_ksn", account.ksn, {
-                  secure: true,
-                  sameSite: "strict",
-                });
-                setCookie("id_email", account.email, {
-                  secure: true,
-                  sameSite: "strict",
-                });
-                setCookie("id_fname", account.firstName, {
-                  secure: true,
-                  sameSite: "strict",
-                });
-                setCookie("id_lname", account.lastName, {
-                  secure: true,
-                  sameSite: "strict",
-                });
-                setCookie("id_picture", account.profilePicture, {
-                  secure: true,
-                  sameSite: "strict",
-                });
+
+                // we set the account data in the global state so that the application can access it anywhere
+                setAccount(account);
 
                 // once all operations are completed, we set authenticated to true
                 setAuthenticated(true);
