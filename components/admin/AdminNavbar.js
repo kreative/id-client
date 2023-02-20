@@ -2,23 +2,24 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCookies } from "react-cookie";
 import axios from "axios";
+import { useAtom } from "jotai";
+
+import { accountStore } from "@/stores/accountStore";
 
 export default function AdminNavbarComponent() {
+  // gets the global account data store
+  const [account, setAccount] = useAtom(accountStore);
+  // gets the cookies from local storage
   const [cookies, setCookie, removeCookie] = useCookies([
     "kreative_id_key",
     "keychain_id",
-    "id_ksn",
-    "id_email",
-    "id_fname",
-    "id_lname",
-    "id_picture",
   ]);
 
   const logout = (e) => {
     // prevents default button click behavior
     e.preventDefault();
 
-    console.log("hello")
+    console.log("hello");
     console.log(process.env.NEXT_PUBLIC_AIDN);
 
     // closes the keychain using id-api
@@ -31,18 +32,12 @@ export default function AdminNavbarComponent() {
         }
       )
       .then((response) => {
-        // response status code is between 200-299
-        // the only response that would come through is 200 (HTTP OK)
-        console.log(response.data.data);
-
         // deletes all cookies stored in local storage
         removeCookie("kreative_id_key");
         removeCookie("keychain_id");
-        removeCookie("id_ksn");
-        removeCookie("id_email");
-        removeCookie("id_fname");
-        removeCookie("id_lname");
-        removeCookie("id_picture");
+
+        // resets the global account data store
+        setAccount({});
 
         // redirects the user to the logout confirmation page
         // TODO: make a better logout confirmation page
