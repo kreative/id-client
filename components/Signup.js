@@ -3,6 +3,7 @@ import Image from "next/image";
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import zxcvbn from "zxcvbn";
 
@@ -36,7 +37,8 @@ function SignupFunction({ appData }) {
   const [goBackStyles, setGoBackStyles] = useState("hidden");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertStyles, setAlertStyles] = useState("hidden");
-
+  const [showPassword, setShowPassword] = useState(false)
+;
   // regex expression for checking if a string is a valid email address
   const regexExp =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
@@ -271,21 +273,38 @@ function SignupFunction({ appData }) {
                         onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
-                    <div>
+                    <div className="relative flex flex-grow items-stretch focus-within:z-10">
                       <label htmlFor="password" className="sr-only">
                         Password
                       </label>
                       <input
                         id="password"
                         name="password"
-                        type="password"
+                        type={showPassword ? "text" : "password"}
                         autoComplete="new-password"
                         value={password}
                         required
-                        className="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="relative block w-full appearance-none rounded-none rounded-bl-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="Password"
                         onChange={(e) => handlePasswordInput(e.target.value)}
                       />
+                      <button
+                        type="button"
+                        className="relative -ml-px inline-flex items-center space-x-2 rounded-br-md border border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeSlashIcon
+                          className="h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                        ): (
+                          <EyeIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </button>
                     </div>
                     <div className={barWrapperClass}>
                       <ProgressBarComponent
