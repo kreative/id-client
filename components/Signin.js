@@ -100,7 +100,6 @@ function SigninFunction({ appData }) {
           changeAlert("No account found with the given email");
         } else if (statusCode === 403 || statusCode === 401) {
           // incorrect credentials
-          // 401 means unauthorized, we need to FIX this from the server side response
           changeAlert("Password or email incorrect");
         } else {
           // some sort of unknown error on the client side
