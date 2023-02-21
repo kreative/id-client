@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useCookies } from "react-cookie";
 
 // this is the callback page that Kreative ID (public authentication part) will go to after a successful auth flow
@@ -22,14 +22,19 @@ export default function AuthPage() {
     // function that executes business logic for callback auth flow
     const executeCallback = async () => {
       // adds the cookie for the client side
-      setCookie("kreative_id_key", key, { secure: true, sameSite: "strict", path: "/" });
+      setCookie("kreative_id_key", key, {
+        secure: true,
+        sameSite: "strict",
+        path: "/",
+      });
+
       // redirects to the admin page for authentication flow to continue
       window.location.href = "/admin";
     };
 
     // takes the given key and creates a new cookie, then redirects user to admin page
     executeCallback();
-  }, [key]);
+  }, [key, setCookie]);
 
   return (
     <>
