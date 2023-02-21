@@ -3,6 +3,7 @@ import Image from "next/image";
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/20/solid";
 import axios from "axios";
 import zxcvbn from "zxcvbn";
 
@@ -40,6 +41,7 @@ function ForgotPasswordFunction({ appData }) {
   const [alertMessage, setAlertMessage] = useState("");
   const [alertStyles, setAlertStyles] = useState("hidden");
   const [goBackStyles, setGoBackStyles] = useState("hidden");
+  const [showNewPassword, setShowNewPassword] = useState(false);
 
   // regex expression for checking if a string is a valid email address
   const regexExp =
@@ -323,7 +325,7 @@ function ForgotPasswordFunction({ appData }) {
                   </div>
 
                   <div id="new-password" className={newPasswordStyles}>
-                    <div>
+                  <div className="relative flex flex-grow items-stretch focus-within:z-10">
                       <label htmlFor="password" className="sr-only">
                         Password
                       </label>
@@ -331,15 +333,32 @@ function ForgotPasswordFunction({ appData }) {
                         id="password"
                         value={password}
                         name="password"
-                        type="password"
+                        type={showNewPassword ? "text" : "password"}
                         autoComplete="new-password"
                         required
-                        className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="relative block w-full appearance-none rounded-none rounded-tl-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="New password"
                         onChange={(e) => handlePasswordInput(e.target.value)}
                       />
+                      <button
+                        type="button"
+                        className="relative -ml-px inline-flex items-center space-x-2 rounded-tr-md border border-gray-300 bg-gray-50 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                      >
+                        {showNewPassword ? (
+                          <EyeSlashIcon
+                          className="h-5 w-5 text-gray-400"
+                          aria-hidden="true"
+                        />
+                        ): (
+                          <EyeIcon
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        )}
+                      </button>
                     </div>
-                    <div>
+                    <div className="relative flex flex-grow items-stretch focus-within:z-10">
                       <label htmlFor="password" className="sr-only">
                         Confirm password
                       </label>
@@ -350,7 +369,7 @@ function ForgotPasswordFunction({ appData }) {
                         type="password"
                         autoComplete="confirm-password"
                         required
-                        className="relative mb-3 block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="relative mb-3 block w-full appearance-none rounded-none rounded-b-md border border-t-0 border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="Confirm password"
                         onChange={(e) => setCPassword(e.target.value)}
                       />
