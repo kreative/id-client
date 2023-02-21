@@ -325,7 +325,7 @@ function ForgotPasswordFunction({ appData }) {
                   </div>
 
                   <div id="new-password" className={newPasswordStyles}>
-                  <div className="relative flex flex-grow items-stretch focus-within:z-10">
+                    <div className="relative flex flex-grow items-stretch focus-within:z-10">
                       <label htmlFor="password" className="sr-only">
                         Password
                       </label>
@@ -347,10 +347,10 @@ function ForgotPasswordFunction({ appData }) {
                       >
                         {showNewPassword ? (
                           <EyeSlashIcon
-                          className="h-5 w-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                        ): (
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        ) : (
                           <EyeIcon
                             className="h-5 w-5 text-gray-400"
                             aria-hidden="true"
