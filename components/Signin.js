@@ -179,10 +179,10 @@ function SigninFunction({ appData }) {
                       >
                         {showPassword ? (
                           <EyeSlashIcon
-                          className="h-5 w-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                        ): (
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        ) : (
                           <EyeIcon
                             className="h-5 w-5 text-gray-400"
                             aria-hidden="true"

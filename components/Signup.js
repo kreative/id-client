@@ -37,8 +37,7 @@ function SignupFunction({ appData }) {
   const [goBackStyles, setGoBackStyles] = useState("hidden");
   const [alertMessage, setAlertMessage] = useState("");
   const [alertStyles, setAlertStyles] = useState("hidden");
-  const [showPassword, setShowPassword] = useState(false)
-;
+  const [showPassword, setShowPassword] = useState(false);
   // regex expression for checking if a string is a valid email address
   const regexExp =
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
@@ -295,10 +294,10 @@ function SignupFunction({ appData }) {
                       >
                         {showPassword ? (
                           <EyeSlashIcon
-                          className="h-5 w-5 text-gray-400"
-                          aria-hidden="true"
-                        />
-                        ): (
+                            className="h-5 w-5 text-gray-400"
+                            aria-hidden="true"
+                          />
+                        ) : (
                           <EyeIcon
                             className="h-5 w-5 text-gray-400"
                             aria-hidden="true"
