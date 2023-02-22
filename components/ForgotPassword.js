@@ -21,7 +21,7 @@ function ForgotPasswordFunction({ appData }) {
 
   // password strength analyzer progress bar states
   const [passwordScore, setPasswordScore] = useState(0);
-  const [barWrapperClass, setBarWrapperClass] = useState("pb-3 hidden");
+  const [barWrapperClass, setBarWrapperClass] = useState("hidden");
   const [barMessage, setBarMessage] = useState("");
   const [progressClass, setProgressClass] = useState("");
   const [barWidthName, setBarWidthName] = useState("");
@@ -369,7 +369,7 @@ function ForgotPasswordFunction({ appData }) {
                         type="password"
                         autoComplete="confirm-password"
                         required
-                        className="relative mb-3 block w-full appearance-none rounded-none rounded-b-md border border-t-0 border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                        className="relative mb-3 block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                         placeholder="Confirm password"
                         onChange={(e) => setCPassword(e.target.value)}
                       />
@@ -385,7 +385,7 @@ function ForgotPasswordFunction({ appData }) {
                     <div>
                       <button
                         onClick={(e) => createNewPassword(e)}
-                        className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                        className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 mt-3 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                       >
                         Set new password
                       </button>
