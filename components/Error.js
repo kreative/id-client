@@ -33,7 +33,7 @@ export default function ErrorComponent({ cause, aidn }) {
     },
     onSuccess: (data) => {
       const words = data.name.split(" ");
-      
+
       if (words.length === 1) setInitiative(words[0].toLowerCase());
       else setInitiative(words[1].toLowerCase());
     },
