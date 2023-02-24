@@ -53,7 +53,7 @@ export default function AdminNavbarComponent() {
         let statusCode;
 
         if (error.response.data.statusCode === undefined) {
-          statusCode = error.response.data.data.statusCode;
+          statusCode = error.response.data.statusCode;
 
           // for all of these errors we want to redirect the user to the error page with a cause
           if (statusCode === 403) {
