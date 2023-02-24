@@ -33,8 +33,9 @@ export default function ErrorComponent({ cause, aidn }) {
     },
     onSuccess: (data) => {
       const words = data.name.split(" ");
-      const newInitiative = words[words.length - 1].toLowerCase();
-      setInitiative(newInitiative);
+      
+      if (words.length === 1) setInitiative(words[0].toLowerCase());
+      else setInitiative(words[1].toLowerCase());
     },
     enabled: true,
   });
@@ -149,7 +150,7 @@ export default function ErrorComponent({ cause, aidn }) {
                   </div>
                   <div className="mt-2">
                     <Link
-                      href={`https://support.kreativeusa.com/${initiative}}`}
+                      href={`https://support.kreativeusa.com/${initiative}`}
                       className="text-base font-medium text-indigo-600 hover:text-indigo-500"
                     >
                       Submit an issue with {errorAppQuery.data.name} support
