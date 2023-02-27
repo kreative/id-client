@@ -1,5 +1,5 @@
+import wretch from "wretch";
 import React, { useState } from "react";
-import axios from "axios";
 import { useCookies } from "react-cookie";
 import { useAtom } from "jotai";
 
@@ -35,76 +35,69 @@ export default function AuthenticateComponent({ children, permissions }) {
         const keyFromCookie = cookies.kreative_id_key;
 
         // runs a verify keychain request on the API
-        axios
-          .post("https://id-api.kreativeusa.com/v1/keychains/verify", {
+        wretch("https://id-api.kreativeusa.com/v1/keychains/verify")
+          .post({
             key: keyFromCookie,
             aidn: parseInt(AIDN),
             appchain: APPCHAIN,
           })
-          .then((response) => {
-            // successful response from the server, should be code 200 (maybe 201)
-            if (response.data.statusCode === 200) {
-              const account = response.data.data.account;
-              const keychain = response.data.data.keychain;
-              const userPermissions = account.permissions;
+          .unauthorized((error) => {
+            // unauthorized exception, meaning that the keychain is expired
+            // relocates to signin page with the callback for 'Kreative ID Test'
+            window.location.href = `/signin?aidn=${AIDN}&message=${error.message}`;
+          })
+          .forbidden((error) => {
+            // aidn given is not the same as the one on the keychain
+            // this is a weird error that would even happen, so we will just reauthenticate the user
+            // relocates to signin page with the callback for 'Kreative ID Test'
+            window.location.href = `/signin?aidn=${AIDN}&message=${error.message}`;
+          })
+          .internalError((error) => {
+            // since there is something on the server side that isn't working reauthenticating wont work
+            // instead we will redirect the user to an auth error page
+            window.location.href = `/error?cause=ise&aidn=${AIDN}&message=${error.message}`;
+          })
+          .res((response) => {
+            const account = response.data.data.account;
+            const keychain = response.data.data.keychain;
+            const userPermissions = account.permissions;
 
-              // checks if the user has the same permissions as required by the application
-              // in other Kreative applications this will have to be manually configured based on number of permissions
-              if (
-                !(
-                  userPermissions.includes(permissions[0]) ||
-                  userPermissions.includes(permissions[1])
-                )
-              ) {
-                // user does not have the correct permissions to continue
-                // we can't just say the user isn't authenticated, because they are, they just don't have the correct permissions
-                // FOR NOW we will handle the error by redirecting the user to the error page with a query param for the error
-                window.location.href = `/error?cause=permissions&aidn=${AIDN}`;
-              } else {
-                // since we can't add headers, since we are executing this on the client side, we will just setup new cookies
-                setCookie("keychain_id", keychain.id, {
-                  secure: true,
-                  sameSite: "strict",
-                  path: "/",
-                });
+            // checks if the user has the same permissions as required by the application
+            // in other Kreative applications this will have to be manually configured based on number of permissions
+            if (
+              !(
+                userPermissions.includes(permissions[0]) ||
+                userPermissions.includes(permissions[1])
+              )
+            ) {
+              // user does not have the correct permissions to continue
+              // we can't just say the user isn't authenticated, because they are, they just don't have the correct permissions
+              // FOR NOW we will handle the error by redirecting the user to the error page with a query param for the error
+              window.location.href = `/error?cause=permissions&aidn=${AIDN}`;
+            } else {
+              // since we can't add headers, since we are executing this on the client side, we will just setup new cookies
+              setCookie("keychain_id", keychain.id, {
+                secure: true,
+                sameSite: "strict",
+                path: "/",
+              });
 
-                // we set the account data in the global state so that the application can access it anywhere
-                setAccount(account);
+              // we set the account data in the global state so that the application can access it anywhere
+              setAccount(account);
 
-                // once all operations are completed, we set authenticated to true
-                setAuthenticated(true);
-              }
+              // once all operations are completed, we set authenticated to true
+              setAuthenticated(true);
             }
           })
           .catch((error) => {
-            console.log(error);
-            // the HTTPS status code is not between 200-299
-            // verification of the key has failed for some reason
-            // possible reasons include: expired keychain, aidn mismatch, internal server error, not found (rare)
-            if (error.response.data.statusCode === 500) {
-              // internal server error
-              // since there is something on the server side that isn't working reauthenticating wont work
-              // instead we will redirect the user to an auth error page
-              window.location.href = `/error?cause=ise&aidn=${AIDN}`;
-            } else if (error.response.data.statusCode === 401) {
-              // unauthorized exception, meaning that the keychain is expired
-              // relocates to signin page with the callback for 'Kreative ID Test'
-              window.location.href = `/signin?aidn=${AIDN}`;
-            } else if (error.response.data.statusCode === 403) {
-              // aidn given is not the same as the one on the keychain
-              // this is a weird error that would even happen, so we will just reauthenticate the user
-              // relocates to signin page with the callback for 'Kreative ID Test'
-              window.location.href = `/signin?aidn=${AIDN}`;
-            } else {
-              // some sort of unknown error, possibly on the client side itseld
-              window.location.href = `/error?cause=unknown&aidn=${AIDN}"`;
-            }
+            // some sort of unknown error, possibly on the client side itself
+            window.location.href = `/error?cause=unknown&aidn=${AIDN}&message=${error.message}`;
           });
       }
     };
 
     authenticate();
-  }, []);
+  }, [cookies.keychain_id, cookies.kreative_id_key]);
 
   return <div>{authenticated && <div>{children}</div>}</div>;
 }
