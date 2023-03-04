@@ -57,9 +57,9 @@ export default function AuthenticateComponent({ children, permissions }) {
             // instead we will redirect the user to an auth error page
             window.location.href = `/error?cause=ise&aidn=${AIDN}&message=${error.message}`;
           })
-          .res((response) => {
-            const account = response.data.data.account;
-            const keychain = response.data.data.keychain;
+          .json((response) => {
+            const account = response.data.account;
+            const keychain = response.data.keychain;
             const userPermissions = account.permissions;
 
             // checks if the user has the same permissions as required by the application
